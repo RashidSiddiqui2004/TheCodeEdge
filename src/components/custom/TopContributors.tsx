@@ -1,0 +1,113 @@
+"use client"
+
+import React, { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Info } from "lucide-react"
+import LeaderboardUserCard from "./LeaderboardUserCard"
+
+export interface Contributor {
+    id: number
+    username: string
+    algopoints: number
+    rank: number
+}
+
+const TopContributors = () => {
+    const [topContributors, setTopContributors] = useState<Contributor[]>([])
+    const [visibleContributors, setVisibleContributors] = useState(4)
+
+    useEffect(() => {
+        const fetchTopContributors = async () => {
+            const mockData: Contributor[] = [
+                { id: 1, username: "Rashid", algopoints: 100, rank: 1 },
+                { id: 2, username: "John", algopoints: 90, rank: 2 },
+                { id: 3, username: "Alex", algopoints: 85, rank: 3 },
+                { id: 4, username: "Emma", algopoints: 80, rank: 4 },
+                { id: 5, username: "Sarah", algopoints: 75, rank: 5 },
+                { id: 6, username: "Michael", algopoints: 70, rank: 6 },
+            ]
+            setTopContributors(mockData)
+        }
+
+        fetchTopContributors()
+    }, [])
+
+    const handleViewMore = () => {
+        setVisibleContributors((prev) => Math.min(prev + 4, topContributors.length))
+    }
+
+    const getCardColor = (rank: number): string => {
+        if (rank === 1) return "bg-yellow-500" // Gold
+        if (rank === 2) return "bg-gray-400" // Silver
+        if (rank === 3) return "bg-orange-400" // Bronze
+        return "bg-gray-600" // Default for others
+    }
+
+    return (
+        <Card className="col-span-4 w-full max-w-md mx-auto rounded-sm">
+            <CardContent className="p-3">
+                <div className="flex justify-center items-center gap-2 mb-6">
+                    <h2 className="text-2xl font-bold">Top Contributors</h2>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-6 w-6">
+                                    <Info className="h-4 w-4" />
+                                    <span className="sr-only">How is Leaderboard calculated?</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-white text-black">
+                                <p>Leaderboard is calculated based on AlgoPoints earned by users.</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
+
+                <ul className="space-y-2">
+                    {topContributors.slice(0, visibleContributors).map((contributor, index) => (
+                        <li
+                            key={contributor.id}
+                            className={`flex items-center justify-between p-3 
+                            rounded-lg ${getCardColor(contributor.rank)}`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <span className="font-bold text-lg">{index + 1}</span>
+                                <span className="font-medium">{contributor.username}</span>
+                            </div>
+                            <span className="font-semibold">{contributor.algopoints} AlgoPoints</span>
+                        </li>
+                    ))}
+                </ul>
+
+                {visibleContributors < topContributors.length && (
+                    <Button onClick={handleViewMore} className="w-full mt-6">
+                        View More
+                    </Button>
+                )}
+
+                <div className="mt-8 text-sm text-gray-600 dark:text-gray-400">
+                    <h3 className="font-semibold mb-2">How is the leaderboard updated?</h3>
+                    <p>
+                        The leaderboard is dynamically updated based on the AlgoPoints earned by users. AlgoPoints are awarded for
+                        various activities:
+                    </p>
+                    <ul className="list-disc list-inside mt-2 space-y-1">
+                        {/* <li>Solving coding challenges: 1-5 points per challenge</li> */}
+                        <li>Writing quality editorials: 10 points per approved editorial</li>
+                        <li>Upvotes on contributions: 1 point per upvote</li>
+                        <li>Helping others in discussions: 2 points per helpful comment</li>
+                    </ul>
+                    <p className="mt-2">
+                        * The leaderboard is updated in real-time as users earn points. Rankings are recalculated daily at midnight
+                        UTC to ensure fair competition.
+                    </p>
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+
+export default TopContributors
+
