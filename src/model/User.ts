@@ -1,6 +1,7 @@
+
 import { SocialLinkInterface } from '@/app/(app)/users/[id]/page';
 import { AuthorBadge } from '@/enums/AuthorBadges';
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, ObjectId } from 'mongoose';
 
 export interface User extends Document {
     username: string
@@ -11,6 +12,7 @@ export interface User extends Document {
     socialLinks: SocialLinkInterface
     algoPoints: number
     authorBadge?: keyof typeof AuthorBadge
+    editorials: ObjectId[]
 }
 
 const UserSchema: Schema<User> = new Schema(
@@ -59,7 +61,13 @@ const UserSchema: Schema<User> = new Schema(
         authorBadge: {
             type: String,
             default: AuthorBadge.Reader
-        }
+        },
+        editorials: {
+            type: [mongoose.Schema.Types.ObjectId],  
+            ref: "Editorial",  
+            default: [],  
+        },
+
     },
     {
         timestamps: true,

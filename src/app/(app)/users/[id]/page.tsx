@@ -1,33 +1,35 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { useUser } from "@clerk/nextjs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import axios, { type AxiosError } from "axios"
-import { useToast } from "@/hooks/use-toast"
-import { updateProfileSchema } from "@/schemas/updateProfileSchema"
-import { PlatformIconMap } from "@/components/my_icons"
+import React, { useEffect, useState } from "react";
+import { SignInButton, useUser } from "@clerk/nextjs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
+import { updateProfileSchema } from "@/schemas/updateProfileSchema";
+import { PlatformIconMap } from "@/components/my_icons";
+import { ZodError } from "zod";
+import { User } from "@/model/User";
 
 export interface SocialLinkInterface {
-    github?: string
-    linkedin?: string
-    leetcode?: string
-    codechef?: string
-    codeforces?: string
+    github?: string;
+    linkedin?: string;
+    leetcode?: string;
+    codechef?: string;
+    codeforces?: string;
 }
 
 interface SocialIconProps {
     platform: string;
     url: string;
     handleSocialChange: (platform: string, updatedUrl: string) => void;
+    error?: string;
 }
 
-const SocialIcon: React.FC<SocialIconProps> = ({ platform, url, handleSocialChange }) => {
+const SocialIcon: React.FC<SocialIconProps> = ({ platform, url, handleSocialChange, error }) => {
     const Icon = PlatformIconMap[platform];
 
     if (!Icon) {
@@ -47,13 +49,14 @@ const SocialIcon: React.FC<SocialIconProps> = ({ platform, url, handleSocialChan
                 onChange={(e) => handleSocialChange(platform, e.target.value)}
                 className="w-full"
             />
+            {error && <p className="text-red-500 text-sm">{error}</p>}
         </div>
     );
 };
 
-
 const Page = () => {
-    const { user } = useUser()
+    const { user } = useUser();
+
     const [formData, setFormData] = useState({
         username: user?.username || "",
         bio: "",
@@ -65,19 +68,28 @@ const Page = () => {
             codeforces: "",
             codechef: "",
         },
-    })
+    });
 
-    const { toast } = useToast()
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     if (!user) {
-        return <h1>You're not authenticated!</h1>
+        return (
+            <div className="flex flex-col gap-6 justify-center items-center text-center min-h-screen">
+                <h1 className="text-3xl font-semibold text-center">You're not authenticated!</h1>
+                <div>
+                    <SignInButton />
+                </div>
+            </div>
+        );
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = e.target
-        setFormData((prev) => ({ ...prev, [id]: value }))
-    }
+        const { id, value } = e.target;
+        setFormData((prev) => ({ ...prev, [id]: value }));
+        setErrors((prev) => ({ ...prev, [id]: "" }));
+    };
 
     const handleSocialChange = (platform: string, value: string) => {
         setFormData((prev) => ({
@@ -86,39 +98,82 @@ const Page = () => {
                 ...prev.socialLinks,
                 [platform]: value,
             },
-        }))
-    }
+        }));
+        setErrors((prev) => ({ ...prev, [platform]: "" }));
+    };
 
     const onSubmit = async () => {
         try {
-            setIsSubmitting(true)
+            setIsSubmitting(true);
+            setErrors({});
 
             const validatedData = updateProfileSchema.parse({
                 ...formData,
                 clerkUserId: user.id,
-            })
+            });
 
-            const response = await axios.post("/api/user/profile", validatedData)
+            const response = await axios.post("/api/user/profile", validatedData);
 
             if (response.data.success) {
                 toast({
                     title: "Profile updated",
                     description: response.data.message,
-                })
+                });
             }
         } catch (error) {
-            console.error("Error updating profile:", error)
-            const axiosError = error as AxiosError
-            const errorMsg = axiosError.response?.data || "Unknown error"
-            toast({
-                title: "Profile update failed",
-                description: "Error occurred",
-                variant: "destructive",
-            })
+            console.error("Error updating profile:", error);
+
+            if (error instanceof ZodError) {
+                setErrors({});
+
+                const errorMap: { [key: string]: string } = {};
+                error.errors.forEach((err) => {
+                    if (err.path[0]) {
+                        errorMap[err.path[0]] = err.message;
+                    }
+                });
+                setErrors(errorMap);
+            } else {
+                console.error("Unexpected error:", error);
+                toast({
+                    title: "An unexpected error occurred",
+                    description: "Please try again later.",
+                    variant: "destructive",
+                });
+            }
         } finally {
-            setIsSubmitting(false)
+            setIsSubmitting(false);
         }
-    }
+    };
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get("/api/user/profile", { params: { clerkUserId: user.id } });
+
+                if (response.data.success) {
+                    const fetchedUser: User = response.data.user;
+
+                    setFormData((prev) => ({
+                        ...prev,
+                        bio: fetchedUser.bio,
+                        username: fetchedUser.username,
+                        socialLinks: { ...prev.socialLinks, ...fetchedUser.socialLinks },
+                    }));
+                }
+
+                return;
+
+            } catch (error) {
+                toast({
+                    title: "Error",
+                    description: "An unexpected error occurred."
+                });
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     return (
         <div className="container mx-auto py-8">
@@ -139,26 +194,33 @@ const Page = () => {
                             <h2 className="text-xl font-semibold">{user.fullName}</h2>
                             <p>{user.primaryEmailAddress?.emailAddress}</p>
                         </div>
-                    </div> 
+                    </div>
                     <form className="space-y-4">
                         <div>
                             <Label htmlFor="username">Username</Label>
                             <Input id="username" value={formData.username} onChange={handleChange} />
+                            {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
                         </div>
                         <div>
                             <Label htmlFor="email">E-Mail</Label>
                             <Input id="email" value={formData.email} onChange={handleChange} />
+                            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                         </div>
                         <div>
                             <Label htmlFor="bio">Bio</Label>
                             <Input id="bio" value={formData.bio} onChange={handleChange} />
+                            {errors.bio && <p className="text-red-500 text-sm">{errors.bio}</p>}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <SocialIcon platform="github" url={formData.socialLinks.github} handleSocialChange={handleSocialChange} />
-                            <SocialIcon platform="linkedin" url={formData.socialLinks.linkedin} handleSocialChange={handleSocialChange} />
-                            <SocialIcon platform="leetcode" url={formData.socialLinks.leetcode} handleSocialChange={handleSocialChange} />
-                            <SocialIcon platform="codechef" url={formData.socialLinks.codechef} handleSocialChange={handleSocialChange} />
-                            <SocialIcon platform="codeforces" url={formData.socialLinks.codeforces} handleSocialChange={handleSocialChange} />
+                            {Object.keys(formData.socialLinks).map((platform) => (
+                                <SocialIcon
+                                    key={platform}
+                                    platform={platform}
+                                    url={formData.socialLinks[platform]}
+                                    handleSocialChange={handleSocialChange}
+                                    error={errors[`socialLinks.${platform}`]}
+                                />
+                            ))}
                         </div>
                         <Button
                             type="button"
@@ -172,8 +234,7 @@ const Page = () => {
                 </CardContent>
             </Card>
         </div>
-    )
-}
+    );
+};
 
-export default Page
-
+export default Page;

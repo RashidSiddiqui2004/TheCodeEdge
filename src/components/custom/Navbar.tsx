@@ -20,17 +20,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-
-
 const Navbar = () => {
-    const { user, isLoaded, isSignedIn } = useUser();
 
+    const { user } = useUser();
 
     return (
         <nav className="flex justify-between py-3 px-3">
-            <a href="/" className="text-lg text-white hover:text-gray-200 transition-colors">
+            <Link href="/" className="text-lg text-white hover:text-gray-200 transition-colors">
                 {APP_NAME}
-            </a>
+            </Link>
             <div className="flex items-center space-x-4">
                 <Link href="/editorials" className="text-white text-sm hover:text-gray-200 transition-colors hidden md:block">
                     Editorials

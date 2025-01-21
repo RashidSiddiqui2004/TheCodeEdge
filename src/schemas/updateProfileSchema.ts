@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod";
 
 export const updateProfileSchema = z.object({
     bio: z.string().min(2, "Bio should be at least 2 characters").max(500, "Bio should be at most 500 characters"),

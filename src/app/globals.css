@@ -10,6 +10,15 @@ body {
   padding: 0;
 }
 
+@font-face {
+  font-family: fell;
+  src: url(/public/fell-400-normal.woff);
+}
+
+.text-fell {
+  font-family: fell;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

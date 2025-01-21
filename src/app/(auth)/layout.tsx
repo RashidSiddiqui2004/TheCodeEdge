@@ -1,8 +1,8 @@
 
-import { Metadata } from "next"; 
+import { Metadata } from "next";
 import AuthProvider from "@/context/AuthProvider";
 import { APP_NAME } from "@/constants";
-  
+
 
 export const metadata: Metadata = {
   title: APP_NAME + " - Master CP",
@@ -16,12 +16,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
-      </body>
-    </html>
+    <AuthProvider>
+      {children}
+    </AuthProvider>
   )
 }

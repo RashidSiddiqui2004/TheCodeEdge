@@ -1,12 +1,12 @@
 import { SignUp } from "@clerk/nextjs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";  
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 
 export default function Page() {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100">
             <Card className="w-full max-w-lg shadow-xl">
-                <CardHeader className="space-y-1"> 
+                <CardHeader className="space-y-1">
                     <CardTitle className="text-3xl font-extrabold text-center text-gray-800">
                         Join TheCodeEdge
                     </CardTitle>

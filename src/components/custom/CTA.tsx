@@ -10,7 +10,7 @@ const CTA = () => {
                 <Link href={'/editorials'}> Explore Editorials</Link>
             </Button>
             <Button className='p-6 rounded-full'>
-                <Link href={'/'}> Write your Editorial</Link>
+                <Link href={'/write-editorial'}> Write your Editorial</Link>
             </Button>
         </div>
     )

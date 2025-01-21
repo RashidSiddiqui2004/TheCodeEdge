@@ -50,7 +50,7 @@ const page = () => {
                 try {
                     const response = await axios.get(`/api/check-username-unique?username=${username}`);
 
-                    setUsernameMsg(response.data.message); 
+                    setUsernameMsg(response.data.message);
                 } catch (error) {
                     const axiosError = error as AxiosError<ApiResponse>;
                     setUsernameMsg(axiosError?.response?.data.message ??
@@ -106,7 +106,7 @@ const page = () => {
         }
     }
 
-    return ( 
+    return (
         <div className="flex justify-center items-center
          min-h-screen">
 
@@ -214,7 +214,7 @@ const page = () => {
                     </p>
                 </div>
             </div>
- 
+
         </div>
     )
 

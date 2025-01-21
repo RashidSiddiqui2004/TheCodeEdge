@@ -1,0 +1,34 @@
+import { z } from "zod"
+import { Types } from "mongoose"
+import { enumsTheCodeEdge } from "@/enums/EnumsTheCodeEdge"
+
+const { ContestPlatforms, ProgrammingLanguages, QuestionDifficulty } = enumsTheCodeEdge
+
+const ProblemSchema = z.object({
+    title: z.string().min(1, "Problem title is required").trim(),
+    link: z.string().url("Invalid URL format").trim(),
+    difficulty: z.enum([QuestionDifficulty.Easy, QuestionDifficulty.Medium, QuestionDifficulty.Hard, QuestionDifficulty.Expert])
+})
+
+export const editorialSchema = z.object({
+    title: z
+        .string()
+        .min(8, "Title must be at least 8 characters long")
+        .max(200, "Title cannot exceed 200 characters")
+        .trim(),
+    // content: z.string().min(50, "Content must be at least 50 characters long"),
+    clerkUserId: z.string(),
+    contestPlatform: z.enum([ContestPlatforms.AtCoder, ContestPlatforms.CodeChef, ContestPlatforms.Codeforces,
+    ContestPlatforms.GeeksforGeeks, ContestPlatforms.HackerRank, ContestPlatforms.LeetCode, ContestPlatforms.TopCoder, ContestPlatforms.Others
+    ]),
+    contestName: z.string().min(10, "Contest name should be atleast 10 characters long."),
+    languageUsed: z.enum([ProgrammingLanguages.C, ProgrammingLanguages.Cpp, ProgrammingLanguages.Java, ProgrammingLanguages.Python,
+    ProgrammingLanguages.JavaScript
+    ]),
+    overallDifficulty: z.enum([QuestionDifficulty.Easy, QuestionDifficulty.Medium, QuestionDifficulty.Hard, QuestionDifficulty.Expert]),
+    // problems: z.array(ProblemSchema),
+    // tags: z.array(z.string().trim().toLowerCase())
+})
+
+export type EditorialSchemaType = z.infer<typeof editorialSchema>
+
