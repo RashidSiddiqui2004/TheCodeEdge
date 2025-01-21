@@ -29,7 +29,7 @@ console.log(fibonacci(10)); // Output: 55`
         <div
             className={cn("col-span-8 mx-4 transition-colors duration-300 h-full", isDarkMode ? "dark bg-gray-900" : "bg-gray-100")}
         >
-            <Card className="max-w-4xl mx-auto shadow-lg">
+            <Card className="shadow-lg">
                 <CardHeader>
                     <div className="flex justify-between items-start">
                         <div className="space-y-2">

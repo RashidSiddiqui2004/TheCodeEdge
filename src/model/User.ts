@@ -1,7 +1,8 @@
+import { AuthorBadge } from '@/enums/AuthorBadges';
 import mongoose, { Schema, Document } from 'mongoose';
 
 // first define the interface, then define Schema using corresponding interface 
- 
+
 export interface User extends Document {
     username: string
     email: string
@@ -18,6 +19,7 @@ export interface User extends Document {
         twitter?: string
     }
     algoPoints: number
+    authorBadge: keyof typeof AuthorBadge
     createdAt: Date
     updatedAt: Date
 }
