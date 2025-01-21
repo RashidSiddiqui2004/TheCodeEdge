@@ -1,27 +1,16 @@
+import { SocialLinkInterface } from '@/app/(app)/users/[id]/page';
 import { AuthorBadge } from '@/enums/AuthorBadges';
 import mongoose, { Schema, Document } from 'mongoose';
 
-// first define the interface, then define Schema using corresponding interface 
-
 export interface User extends Document {
     username: string
-    email: string
-    password: string
-    verifyCode: string
-    isVerified: boolean
-    verifyCodeExpiry: Date
-    role: "user" | "admin" | "moderator"
+    email?: string
+    clerkUserId: string
+    role: "user" | "admin"
     bio: string
-    avatarUrl: string
-    socialLinks: {
-        github?: string
-        linkedin?: string
-        twitter?: string
-    }
+    socialLinks: SocialLinkInterface
     algoPoints: number
-    authorBadge: keyof typeof AuthorBadge
-    createdAt: Date
-    updatedAt: Date
+    authorBadge?: keyof typeof AuthorBadge
 }
 
 const UserSchema: Schema<User> = new Schema(
@@ -35,7 +24,6 @@ const UserSchema: Schema<User> = new Schema(
         },
         email: {
             type: String,
-            required: [true, "Email is required"],
             unique: true,
             lowercase: true,
             trim: true,
@@ -44,22 +32,8 @@ const UserSchema: Schema<User> = new Schema(
                 "Please use a valid Email Address",
             ],
         },
-        password: {
-            type: String,
-            required: [true, "Password is required"],
-            minlength: [8, "Password must be at least 8 characters long"],
-        },
-        verifyCode: {
-            type: String,
-            required: [true, "Verification Code is required"],
-        },
-        verifyCodeExpiry: {
-            type: Date,
-            required: [true, "Verification Code Expiry Date is required"],
-        },
-        isVerified: {
-            type: Boolean,
-            default: false,
+        clerkUserId: {
+            type: String
         },
         role: {
             type: String,
@@ -75,12 +49,17 @@ const UserSchema: Schema<User> = new Schema(
             type: String,
             maxlength: [500, "Bio cannot be more than 500 characters"],
         },
-        avatarUrl: String,
         socialLinks: {
             github: String,
             linkedin: String,
-            twitter: String,
+            leetcode: String,
+            codechef: String,
+            codeforces: String,
         },
+        authorBadge: {
+            type: String,
+            default: AuthorBadge.Reader
+        }
     },
     {
         timestamps: true,

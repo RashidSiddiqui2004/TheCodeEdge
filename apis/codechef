@@ -1,0 +1,7 @@
+fetch all contests
+
+https://www.codechef.com/api/list/contests/all?sort_by=START&sorting_order=asc&offset=0&mode=all
+
+fetch contest data
+
+https://www.codechef.com/api/contests/START169B
