@@ -11,12 +11,13 @@ import Link from "next/link"
 const platforms = ["LeetCode", "HackerRank", "CodeForces", "AtCoder"]
 const difficulties = ["Easy", "Medium", "Hard"]
 
-interface Editorial {
+export interface EditorialInterface {
     id: number
     title: string
     author: string
     platform: string
     difficulty: string
+    contest?: string
     likes: number
     comments: number
 }
@@ -26,7 +27,7 @@ const Page = () => {
     const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
     const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([])
 
-    const [editorials, setEditorials] = useState<Editorial[]>([
+    const [editorials, setEditorials] = useState<EditorialInterface[]>([
         {
             id: 1,
             title: "Two Sum Solution",

@@ -15,8 +15,8 @@ export async function GET(request: Request) {
             );
         }
 
-        const response = await axios.get("https://www.codechef.com/api/contests/START169B");
-        const contestData = response.data.past_contests;
+        const response = await axios.get(`https://www.codechef.com/api/contests/${contestID + 'B'}`);
+        const contestData = response.data;
 
         if (contestData) {
             return new Response(

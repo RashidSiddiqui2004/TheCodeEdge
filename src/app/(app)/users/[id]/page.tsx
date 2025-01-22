@@ -13,6 +13,8 @@ import { updateProfileSchema } from "@/schemas/updateProfileSchema";
 import { PlatformIconMap } from "@/components/my_icons";
 import { ZodError } from "zod";
 import { User } from "@/model/User";
+import EditorialCard from "@/components/custom/EditorialCard";
+import { Editorial } from "@/model/Editorial";
 
 export interface SocialLinkInterface {
     github?: string;
@@ -57,6 +59,8 @@ const SocialIcon: React.FC<SocialIconProps> = ({ platform, url, handleSocialChan
 const Page = () => {
     const { user } = useUser();
 
+    const [editorials, setEditorials] = useState<Editorial[]>([]);
+
     const [formData, setFormData] = useState({
         username: user?.username || "",
         bio: "",
@@ -73,17 +77,6 @@ const Page = () => {
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
-
-    if (!user) {
-        return (
-            <div className="flex flex-col gap-6 justify-center items-center text-center min-h-screen">
-                <h1 className="text-3xl font-semibold text-center">You're not authenticated!</h1>
-                <div>
-                    <SignInButton />
-                </div>
-            </div>
-        );
-    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -109,7 +102,7 @@ const Page = () => {
 
             const validatedData = updateProfileSchema.parse({
                 ...formData,
-                clerkUserId: user.id,
+                clerkUserId: user?.id,
             });
 
             const response = await axios.post("/api/user/profile", validatedData);
@@ -147,13 +140,14 @@ const Page = () => {
     };
 
     useEffect(() => {
+
         const fetchUserData = async () => {
             try {
                 const response = await axios.get("/api/user/profile", { params: { clerkUserId: user.id } });
 
                 if (response.data.success) {
                     const fetchedUser: User = response.data.user;
-
+                    user.username = fetchedUser.username;
                     setFormData((prev) => ({
                         ...prev,
                         bio: fetchedUser.bio,
@@ -172,11 +166,45 @@ const Page = () => {
             }
         };
 
+        const fetchEditorials = async () => {
+            try {
+                const response = await axios.get("/api/editorials", { params: { userId: user?.id } });
+
+                if (response.data.success) {
+                    const fetchedEditorials = response.data.userEditorials;
+                    setEditorials(fetchedEditorials);
+                    console.log(fetchedEditorials);
+                }
+
+                return;
+
+            } catch (error) {
+                toast({
+                    title: "Error",
+                    description: "An unexpected error occurred."
+                });
+            }
+        }
+
         fetchUserData();
+        fetchEditorials();
     }, []);
+
+
+    if (!user) {
+        return (
+            <div className="flex flex-col gap-6 justify-center items-center text-center min-h-screen">
+                <h1 className="text-3xl font-semibold text-center">You're not authenticated!</h1>
+                <div>
+                    <SignInButton />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto py-8">
+
             <Card className="mx-auto bg-inherit text-white">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold">User Profile</CardTitle>
@@ -231,6 +259,23 @@ const Page = () => {
                             {isSubmitting ? "Updating..." : "Update Profile"}
                         </Button>
                     </form>
+
+                    <div className=" border-t-2 mt-4 py-4">
+                        <h1 className=" text-2xl text-fell">Latest editorials</h1>
+
+                        <div className="grid grid-cols-2 my-2 gap-3">
+                            {editorials.map((editorial, index) => {
+                                return (
+                                    <div key={editorial._id.toString()}>
+                                        <EditorialCard title={editorial.title}
+                                            author={editorial.author.toString()} platform={editorial.contestPlatform}
+                                            difficulty={editorial.overallDifficulty} likes={editorial.likes}
+                                            comments={editorial.comments.length} />
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
         </div>

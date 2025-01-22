@@ -3,17 +3,9 @@ import type React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ThumbsUp, MessageSquare } from "lucide-react"
+import { EditorialInterface } from "@/app/(app)/editorials/page"
 
-interface EditorialCardProps {
-    title: string
-    author: string
-    platform: string
-    difficulty: string
-    likes: number
-    comments: number
-}
-
-const EditorialCard: React.FC<EditorialCardProps> = ({ title, author, platform, difficulty, likes, comments }) => {
+const EditorialCard: React.FC<EditorialInterface> = ({ title, author, platform, difficulty, likes, comments, contest }) => {
     return (
         <Card>
             <CardHeader>
@@ -23,6 +15,7 @@ const EditorialCard: React.FC<EditorialCardProps> = ({ title, author, platform, 
                 <div className="flex justify-between items-center">
                     <div className="space-x-2">
                         <Badge>{platform}</Badge>
+                        <Badge>{contest}</Badge>
                         <Badge variant={difficulty === "Easy" ? "default" : difficulty === "Medium" ? "secondary" : "destructive"}>
                             {difficulty}
                         </Badge>

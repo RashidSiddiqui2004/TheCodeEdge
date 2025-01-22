@@ -24,6 +24,8 @@ const Navbar = () => {
 
     const { user } = useUser();
 
+    const userName = user?.firstName?.toLowerCase() + "_" + user?.lastName?.toLowerCase();
+
     return (
         <nav className="flex justify-between py-3 px-3">
             <Link href="/" className="text-lg text-white hover:text-gray-200 transition-colors">
@@ -52,7 +54,7 @@ const Navbar = () => {
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
-                                <Link href={`/users/${user?.id}`}>Profile</Link>
+                                <Link href={`/users/${userName}`}>Profile</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <SignOutButton />

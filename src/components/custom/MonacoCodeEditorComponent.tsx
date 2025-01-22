@@ -15,6 +15,7 @@ export const MonacoCodeEditorComponent: React.FC<CodeEditorProps> = ({ value, on
                 height="400px"
                 language={language}
                 value={value}
+                defaultLanguage={placeholder}
                 onChange={(value) => onChange(value || "")}
                 options={{
                     minimap: { enabled: false },
