@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { MonacoCodeEditorComponent } from "@/components/custom/MonacoCodeEditorComponent";
 import { enumsTheCodeEdge } from "@/enums/EnumsTheCodeEdge";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/custom/Navbar";
@@ -73,7 +72,7 @@ const Page = () => {
         e.preventDefault();
         setIsSubmitting(true);
 
-        try { 
+        try {
             setErrors({});
 
             const validatedEditorial = editorialSchema.parse({
@@ -137,7 +136,7 @@ const Page = () => {
             if (response.data.success) {
                 const problemsFetched = response.data.contestData.problems;
 
-                const problemsData: ProblemData[] = Object.entries(problemsFetched).map(([key, problem]: [string, any]) => ({
+                const problemsData: ProblemData[] = Object.entries(problemsFetched).map(([_, problem]: [string, any]) => ({
                     problemName: problem.name,
                     problemUrl: problem.problem_url
                 }));
@@ -148,7 +147,7 @@ const Page = () => {
             setListofProblems([]);
         }
     };
- 
+
     useEffect(() => {
         fetchLatestContestsData();
     }, [formData.contestPlatform]);

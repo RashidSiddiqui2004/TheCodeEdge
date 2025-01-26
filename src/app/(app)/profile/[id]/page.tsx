@@ -164,6 +164,8 @@ const Page = () => {
                 return;
 
             } catch (error) {
+                console.log("Error occured while fetching user data: ", error);
+
                 toast({
                     title: "Error",
                     description: "An unexpected error occurred."
@@ -183,6 +185,9 @@ const Page = () => {
                 return;
 
             } catch (error) {
+
+                console.log("Error occured while fetching editorials: ", error);
+
                 toast({
                     title: "Error fetching user editorials!",
                     description: "An unexpected error occurred."
@@ -192,13 +197,13 @@ const Page = () => {
 
         fetchUserData();
         fetchEditorials();
-    }, []);
+    }, [toast, user]);
 
 
     if (!user) {
         return (
             <div className="flex flex-col gap-6 justify-center items-center text-center min-h-screen">
-                <h1 className="text-3xl font-semibold text-center">You're not authenticated!</h1>
+                <h1 className="text-3xl font-semibold text-center">You&#39;re not authenticated!</h1>
                 <div>
                     <SignInButton />
                 </div>

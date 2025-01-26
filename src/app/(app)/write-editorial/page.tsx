@@ -186,7 +186,7 @@ const Page = () => {
     if (!user) {
         return (
             <div className="flex flex-col gap-6 justify-center items-center text-center min-h-screen">
-                <h1 className="text-3xl font-semibold">You're not authenticated!</h1>
+                <h1 className="text-3xl font-semibold text-center">You&#39;re not authenticated!</h1>
                 <SignInButton />
             </div>
         );

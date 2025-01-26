@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/dbConnect";
 import EditorialModel from "@/model/Editorial";
 
-export async function GET(request: Request) {
+export async function GET() {
     try {
         await dbConnect();
 

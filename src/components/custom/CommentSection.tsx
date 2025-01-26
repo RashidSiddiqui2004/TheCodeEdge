@@ -1,6 +1,5 @@
 
-import React, { useEffect } from 'react'
-import EditorialNavigator from './EditorialNavigator'
+import React, { useEffect } from 'react' 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -17,7 +16,7 @@ interface EditorialSideHeroProps {
     isCommentSectionOpen: boolean;
     updateCommentState: () => void;
     commentsIds: Types.ObjectId[];
-    handleComment: (commentContent: string) => Promise<Boolean>;
+    handleComment: (commentContent: string) => Promise<boolean>;
 }
 
 const CommentSection: React.FC<EditorialSideHeroProps> = ({ commentsIds, handleComment, isCommentSectionOpen }) => {

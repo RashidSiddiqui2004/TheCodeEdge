@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Editor from "@monaco-editor/react";
 
 interface CodeEditorProps {
@@ -13,17 +13,12 @@ export const MonacoReadOnlyEditor: React.FC<CodeEditorProps> = ({
     const [isDarkMode, setIsDarkMode] = useState(true);
     const editorRef = useRef(null);
 
-    function handleEditorDidMount(editor, monaco) {
-        editorRef.current = editor;
-    }
-
     return (
         <div
             ref={editorRef}
             className={`border rounded-md overflow-hidden ${isDarkMode ? "bg-gray-900" : "bg-white"
                 }`}
         >
-            {/* Theme Toggle Button */}
             <div className="flex items-center space-x-2 p-2 bg-gray-800 text-white">
                 <h1 className="text-sm font-medium">Read-Only Editor</h1>
                 <button
@@ -35,7 +30,6 @@ export const MonacoReadOnlyEditor: React.FC<CodeEditorProps> = ({
                 </button>
             </div>
 
-            {/* Monaco Editor */}
             <Editor
                 height="30vh"
                 theme={isDarkMode ? "vs-dark" : "light"}

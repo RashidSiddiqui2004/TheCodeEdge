@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { ThumbsUp, MessageSquare, Sun, Moon, ChevronDown, ChevronUp } from "lucide-react"
+import { ThumbsUp, MessageSquare, ChevronDown, ChevronUp } from "lucide-react"
 import CodeEditor from "./CodeEditor"
 import { cn } from "@/lib/utils"
 
@@ -19,11 +19,6 @@ const SampleEditorial = () => {
 }
 
 console.log(fibonacci(10)); // Output: 55`
-
-    const toggleDarkMode = () => {
-        setIsDarkMode(!isDarkMode)
-        document.documentElement.classList.toggle("dark")
-    }
 
     return (
         <div
@@ -98,13 +93,13 @@ console.log(fibonacci(10)); // Output: 55`
                 <CardContent>
                     <div className={cn("prose max-w-none", isDarkMode ? "dark:prose-invert" : "")}>
                         <p>
-                            In this editorial, we'll explore a recursive solution to generate the Fibonacci sequence. The Fibonacci
+                            In this editorial, we&#39;ll explore a recursive solution to generate the Fibonacci sequence. The Fibonacci
                             sequence is a series of numbers where each number is the sum of the two preceding ones...
                         </p>
                         <h3>Problem Statement</h3>
                         <p>Given a number n, calculate the nth Fibonacci number...</p>
                         <h3>Solution</h3>
-                        <p>We can solve this problem using a recursive approach. Here's the implementation:</p>
+                        <p>We can solve this problem using a recursive approach. Here&#39;s the implementation:</p>
                         <CodeEditor code={code} isDarkMode={isDarkMode} />
                         {/* {showFullContent && (
                             <>

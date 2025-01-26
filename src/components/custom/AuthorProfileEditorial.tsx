@@ -20,8 +20,7 @@ interface AuthorProfileEditorialProps {
 
 const AuthorProfileEditorial: React.FC<AuthorProfileEditorialProps> = ({
     author,
-    editorialPublishDate,
-    editorialEditedDate,
+    editorialPublishDate, 
 }) => {
 
     const formatDate = (date: Date | undefined) =>
@@ -53,7 +52,7 @@ const AuthorProfileEditorial: React.FC<AuthorProfileEditorialProps> = ({
 
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    {/* Published On */}
+         
                     <h1 className="text-start text-xs md:text-sm text-slate-300">
                         Published on: <span className="font-medium">{formatDate(editorialPublishDate)}</span>
                     </h1>

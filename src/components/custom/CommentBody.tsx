@@ -3,13 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ThumbsUp, MessageSquare } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { Comment } from '@/model/Comment'
 import { Author } from './EditorialHeader'
 import axios from 'axios'
 import { PiHandsClapping } from "react-icons/pi";
- 
+
 interface CommentProps {
     comment: Comment
 }
@@ -49,8 +48,8 @@ const CommentBody: React.FC<CommentProps> = ({ comment }) => {
                             <span className="text-xs">
                                 {formatDistanceToNow(comment.createdAt, { addSuffix: true })}
                             </span>
-                        </div> 
-                    </div> 
+                        </div>
+                    </div>
                 </div>
                 <p className="mt-2 italic">{comment.content}</p>
             </CardContent>

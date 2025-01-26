@@ -15,7 +15,7 @@ const AboutPage = () => {
                 <h1 className="text-4xl mb-4">About CodeEdge</h1>
                 <p className="text-lg max-w-2xl mx-auto">
                     CodeEdge is your one-stop platform to explore, learn, and share knowledge about coding.
-                    We're committed to building a community of developers who are passionate about solving
+                    We &#39;re committed to building a community of developers who are passionate about solving
                     real-world problems through code.
                 </p>
             </div>
@@ -46,23 +46,13 @@ const AboutPage = () => {
             <div className="py-12 px-6 sm:px-12 lg:px-32 bg-gray-800">
                 <h2 className="text-3xl text-center mb-8">Meet Our Team</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
-                    {/* Example Team Member */}
-                    <div className="text-center">
-                        <img
-                            src="https://via.placeholder.com/150"
-                            alt="Team Member"
-                            className="w-24 h-24 rounded-full mx-auto mb-4"
-                        />
+                
+                    <div className="text-center"> 
                         <h3 className="text-xl">Rashid Siddiqui</h3>
                         <p className="text-gray-400">Founder & CEO</p>
-                    </div>
-                    {/* Add more team members similarly */}
+                    </div> 
                     <div className="text-center">
-                        <img
-                            src="https://via.placeholder.com/150"
-                            alt="Team Member"
-                            className="w-24 h-24 rounded-full mx-auto mb-4"
-                        />
+                       
                         <h3 className="text-xl">Ms. X</h3>
                         <p className="text-gray-400">CTO</p>
                     </div>
@@ -95,7 +85,7 @@ const AboutPage = () => {
             <div className="py-12 text-center">
                 <h2 className="text-2xl mb-4">Join the CodeEdge Community</h2>
                 <p className="text-gray-200 mb-6">
-                    Whether you are a seasoned developer or just starting, there's something here for everyone.
+                    Whether you are a seasoned developer or just starting, there &#39;s something here for everyone.
                 </p>
                 <Button onClick={() => router.push("/sign-up")} className="bg-gray-100 text-slate-950 px-6 py-2 rounded-lg hover:bg-gray-200 
                     transition">

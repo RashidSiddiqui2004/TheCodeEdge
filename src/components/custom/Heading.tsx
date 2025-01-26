@@ -15,7 +15,7 @@ const Heading = () => {
             </h2>
 
             <blockquote className="mt-6 border-l-2 pl-6 italic text-center max-w-xl mx-auto">
-                "In the world of CP, every problem is an opportunity to learn and grow."
+                &quot;In the world of CP, every problem is an opportunity to learn and grow.&quot;
             </blockquote>
 
             <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold text-black mt-4">

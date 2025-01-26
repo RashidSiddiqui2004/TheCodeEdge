@@ -2,7 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import axios from "axios";
 
 export async function GET(request: Request) {
-    // await dbConnect();
+    await dbConnect();
 
     try {
         const { searchParams } = new URL(request.url);

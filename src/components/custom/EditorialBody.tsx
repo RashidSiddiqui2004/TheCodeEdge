@@ -8,12 +8,10 @@ import { Editorial } from "@/model/Editorial";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import CodeEditor from "./CodeEditor";
-import { MonacoCodeEditorComponent } from "./MonacoCodeEditorComponent";
+import CodeEditor from "./CodeEditor"; 
 import { MonacoReadOnlyEditor } from "./MonacoReadOnlyEditor";
 import CommentSection from "./CommentSection";
-import { useUser } from "@clerk/nextjs";
-import { ObjectId } from "mongoose";
+import { useUser } from "@clerk/nextjs"; 
 import EditorialNavigator from "./EditorialNavigator";
 import MoreFromAuthor from "./MoreFromAuthor";
 
@@ -23,12 +21,6 @@ interface EditorialBodyProps {
 
 const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
     const user = useUser();
-
-    if (!user.isSignedIn) {
-        return;
-    }
-
-    const clerkId = user.user.id;
 
     const { toast } = useToast();
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -70,7 +62,6 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
         });
     };
 
-
     const fetchAuthorName = async (author_id: any) => {
         try {
 
@@ -94,6 +85,12 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
             });
         }
     };
+
+    if (!user.isSignedIn) {
+        return;
+    }
+
+    const clerkId = user.user.id;
 
     const fetchEditorial = async () => {
         try {

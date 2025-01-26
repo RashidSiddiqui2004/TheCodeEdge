@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
@@ -11,7 +10,6 @@ import { User } from "@/model/User";
 import EditorialCard from "@/components/custom/EditorialCard";
 import { Editorial } from "@/model/Editorial";
 import { ObjectId } from "mongoose";
-import { Textarea } from "@/components/ui/textarea";
 import TextDisplay from "@/components/ui/TextDisplay";
 
 export interface SocialLinkInterface {
@@ -72,7 +70,7 @@ export default function Page({
 
             if (response.data.success) {
                 const fetchedUser: User = response.data.user;
-                setUserData(fetchedUser); 
+                setUserData(fetchedUser);
             } else {
                 toast({
                     title: "Error",
@@ -106,7 +104,7 @@ export default function Page({
     useEffect(() => {
         fetchUserData();
         fetchEditorials();
-    }, [username]);
+    }, [fetchUserData, fetchEditorials, username]);
 
     return (
         <div className="py-8 flex justify-center items-center bg-slate-950 text-fell">
