@@ -7,9 +7,10 @@ export async function POST(request: Request) {
     await dbConnect()
 
     try {
-        const { clerkUserId, title, contestPlatform, contestName, problems, languageUsed, overallDifficulty } =
-            await request.json()
-  
+        const { clerkUserId, title, contestPlatform, contestName, languageUsed,
+            overallDifficulty, introduction, outro, problems
+        } = await request.json()
+
         const user = await UserModel.findOne({ clerkUserId })
 
         if (!user) {
@@ -24,10 +25,12 @@ export async function POST(request: Request) {
             languageUsed,
             overallDifficulty,
             problems,
+            introduction,
+            outro,
             createdAt: new Date(),
             updatedAt: new Date(),
         })
- 
+
         const savedEditorial = await editorial.save();
 
         user.editorials.push(savedEditorial._id)
@@ -45,7 +48,7 @@ export async function POST(request: Request) {
         )
     }
 }
- 
+
 export async function GET(request: Request) {
     try {
         await dbConnect();
@@ -59,7 +62,7 @@ export async function GET(request: Request) {
                 { status: 400 }
             );
         }
-
+         
         // Fetch user and populate editorials using Mongoose's `populate` method
         const userData = await UserModel.findOne({ clerkUserId: userId }).populate("editorials");
 
@@ -86,8 +89,7 @@ export async function GET(request: Request) {
         );
     }
 }
-
-
+ 
 // BAD CODE => Learn new methods which are more efficient -> populate method
 // export async function GET(request: Request) {
 

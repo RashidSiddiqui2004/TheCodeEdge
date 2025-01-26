@@ -4,15 +4,16 @@ import { AuthorBadge } from '@/enums/AuthorBadges';
 import mongoose, { Schema, Document, ObjectId } from 'mongoose';
 
 export interface User extends Document {
-    username: string
-    email?: string
-    clerkUserId: string
-    role: "user" | "admin"
-    bio: string
-    socialLinks: SocialLinkInterface
-    algoPoints: number
-    authorBadge?: keyof typeof AuthorBadge
-    editorials: ObjectId[]
+    username: string;
+    email?: string;
+    imageUrl: string;
+    clerkUserId: string;
+    role: "user" | "admin";
+    bio: string;
+    socialLinks: SocialLinkInterface;
+    algoPoints: number;
+    authorBadge?: keyof typeof AuthorBadge;
+    editorials: ObjectId[];
 }
 
 const UserSchema: Schema<User> = new Schema(
@@ -36,6 +37,10 @@ const UserSchema: Schema<User> = new Schema(
         },
         clerkUserId: {
             type: String
+        },
+        imageUrl: {
+            type: String,
+            default: "https://github.com/shadcn.png"
         },
         role: {
             type: String,
@@ -63,11 +68,10 @@ const UserSchema: Schema<User> = new Schema(
             default: AuthorBadge.Reader
         },
         editorials: {
-            type: [mongoose.Schema.Types.ObjectId],  
-            ref: "Editorial",  
-            default: [],  
-        },
-
+            type: [mongoose.Schema.Types.ObjectId],
+            ref: "Editorial",
+            default: [],
+        }, 
     },
     {
         timestamps: true,

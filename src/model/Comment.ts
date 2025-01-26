@@ -2,7 +2,7 @@ import mongoose, { Schema, type Document } from "mongoose"
 
 export interface Comment extends Document {
     content: string
-    author: mongoose.Types.ObjectId
+    author: string
     editorial: mongoose.Types.ObjectId
     likes: number
     replies: mongoose.Types.ObjectId[]
@@ -20,7 +20,7 @@ const CommentSchema: Schema<Comment> = new Schema(
             maxlength: [1000, "Comment cannot be more than 1000 characters"],
         },
         author: {
-            type: Schema.Types.ObjectId,
+            type: String,
             ref: "User",
             required: [true, "Comment author is required"],
         },

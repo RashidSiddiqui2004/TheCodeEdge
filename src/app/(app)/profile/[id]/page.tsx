@@ -15,6 +15,9 @@ import { ZodError } from "zod";
 import { User } from "@/model/User";
 import EditorialCard from "@/components/custom/EditorialCard";
 import { Editorial } from "@/model/Editorial";
+import { ObjectId } from "mongoose";
+import Link from "next/link";
+import generateSlug from "@/lib/generateSlug";
 
 export interface SocialLinkInterface {
     github?: string;
@@ -63,6 +66,7 @@ const Page = () => {
 
     const [formData, setFormData] = useState({
         username: user?.username || "",
+        userProfileImage: "",
         bio: "",
         email: user?.primaryEmailAddress?.emailAddress || "",
         socialLinks: {
@@ -152,6 +156,7 @@ const Page = () => {
                         ...prev,
                         bio: fetchedUser.bio,
                         username: fetchedUser.username,
+                        userProfileImage: fetchedUser.imageUrl,
                         socialLinks: { ...prev.socialLinks, ...fetchedUser.socialLinks },
                     }));
                 }
@@ -173,14 +178,13 @@ const Page = () => {
                 if (response.data.success) {
                     const fetchedEditorials = response.data.userEditorials;
                     setEditorials(fetchedEditorials);
-                    console.log(fetchedEditorials);
                 }
 
                 return;
 
             } catch (error) {
                 toast({
-                    title: "Error",
+                    title: "Error fetching user editorials!",
                     description: "An unexpected error occurred."
                 });
             }
@@ -235,6 +239,11 @@ const Page = () => {
                             {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                         </div>
                         <div>
+                            <Label htmlFor="email">Profile image</Label>
+                            <Input id="userProfileImage" value={formData.userProfileImage} onChange={handleChange} />
+                            {errors.userProfileImage && <p className="text-red-500 text-sm">{errors.userProfileImage}</p>}
+                        </div>
+                        <div>
                             <Label htmlFor="bio">Bio</Label>
                             <Input id="bio" value={formData.bio} onChange={handleChange} />
                             {errors.bio && <p className="text-red-500 text-sm">{errors.bio}</p>}
@@ -260,18 +269,18 @@ const Page = () => {
                         </Button>
                     </form>
 
-                    <div className=" border-t-2 mt-4 py-4">
+                    <div className="border-t-2 mt-4 py-4">
                         <h1 className=" text-2xl text-fell">Latest editorials</h1>
 
                         <div className="grid grid-cols-2 my-2 gap-3">
-                            {editorials.map((editorial, index) => {
+                            {editorials.length && editorials.map((editorial, index) => {
                                 return (
-                                    <div key={editorial._id.toString()}>
-                                        <EditorialCard title={editorial.title}
-                                            author={editorial.author.toString()} platform={editorial.contestPlatform}
-                                            difficulty={editorial.overallDifficulty} likes={editorial.likes}
-                                            comments={editorial.comments.length} />
+                                    <div key={index}>
+                                        <Link href={`/editorial/${generateSlug(editorial.title, (editorial._id as ObjectId).toString())}`}>
+                                            <EditorialCard editorial={editorial} />
+                                        </Link>
                                     </div>
+
                                 )
                             })}
                         </div>

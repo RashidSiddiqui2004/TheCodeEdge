@@ -4,7 +4,7 @@ import { enumsTheCodeEdge } from "@/enums/EnumsTheCodeEdge";
 const { ContestPlatforms, ProgrammingLanguages, QuestionDifficulty } = enumsTheCodeEdge;
 
 // Defining the problem structure as a sub-document schema
-const ProblemSchema: Schema = new Schema({
+export const ProblemSchema: Schema = new Schema({
     problemName: {
         type: String,
         required: [true, "Problem name is required (same as in the Contest)"],
@@ -44,7 +44,7 @@ export interface Editorial extends Document {
     overallDifficulty: keyof typeof QuestionDifficulty;
     introduction?: string;
     problems: {
-        title: string;
+        problemName: string;
         link?: string;
         difficulty: keyof typeof QuestionDifficulty;
         approach: string;
@@ -98,14 +98,14 @@ const EditorialSchema: Schema<Editorial> = new Schema(
             type: String,
             // required: [true, "Editorial introduction is required"],
             trim: true,
-            // minlength: [8, "Title must be at least 8 characters long"],
-            maxlength: [200, "Title cannot exceed 200 characters"],
+            minlength: [8, "Introduction must be at least 8 characters long"],
+            maxlength: [2000, "Introduction cannot exceed 2000 characters"],
         },
         problems: [ProblemSchema],
         outro: {
             type: String,
             trim: true,
-            maxlength: [50, "Title cannot exceed 200 characters"],
+            maxlength: [1000, "Title cannot exceed 1000 characters"],
         },
         tags: [
             {

@@ -18,10 +18,11 @@ export const editorialSchema = z.object({
         .min(8, "Title must be at least 8 characters long")
         .max(200, "Title cannot exceed 200 characters")
         .trim(),
-    introduction: z.string().min(50, "Content must be at least 50 characters long"),
+    introduction: z.string().min(8, "Introduction must be at least 8 characters long")
+        .max(2000, "Introduction cannot exceed 2000 characters"),
     clerkUserId: z.string(),
-    contestPlatform: z.enum([ContestPlatforms.AtCoder, ContestPlatforms.CodeChef, ContestPlatforms.Codeforces,
-    ContestPlatforms.GeeksforGeeks, ContestPlatforms.HackerRank, ContestPlatforms.LeetCode, ContestPlatforms.TopCoder, ContestPlatforms.Others
+    contestPlatform: z.enum([ContestPlatforms.CodeChef, ContestPlatforms.Codeforces,
+    ContestPlatforms.HackerRank, ContestPlatforms.LeetCode,
     ]),
     contestName: z.string().min(4, "Contest name should be atleast 4 characters long."),
     languageUsed: z.enum([ProgrammingLanguages.C, ProgrammingLanguages.Cpp, ProgrammingLanguages.Java, ProgrammingLanguages.Python,
@@ -29,7 +30,7 @@ export const editorialSchema = z.object({
     ]),
     overallDifficulty: z.enum([QuestionDifficulty.Easy, QuestionDifficulty.Medium, QuestionDifficulty.Hard, QuestionDifficulty.Expert]),
     problems: z.array(ProblemSchema),
-    outro: z.string().max(50, "Outro should be at max 50 characters long"),
+    outro: z.string().max(1000, "Outro cannot exceed 1000 characters"),
     // tags: z.array(z.string().trim().toLowerCase())
 })
 

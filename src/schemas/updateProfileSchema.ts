@@ -5,6 +5,9 @@ export const updateProfileSchema = z.object({
     email: z.string().email({
         message: "Invalid email address",
     }),
+    userProfileImage: z.string().url({
+        message: "Invalid image URL"
+    }),
     username: z.string().min(1, "Username cannot be empty").max(50, "Username cannot be more than 50 characters"),
     clerkUserId: z.string(),
     socialLinks: z

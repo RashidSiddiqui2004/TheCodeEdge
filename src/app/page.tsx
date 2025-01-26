@@ -7,7 +7,7 @@ import TopContributors from "@/components/custom/TopContributors";
 
 export default function Home() {
   return (
-    <div className="items-center min-h-screen font-[family-name:var(--font-geist-sans)]">
+    <div className="items-center min-h-screen font-[family-name:var(--font-geist-sans)] bg-slate-800">
       <Navbar />
       <Heading />
       <CTA />

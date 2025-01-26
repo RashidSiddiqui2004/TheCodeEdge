@@ -6,6 +6,7 @@ import {
   ClerkProvider
 } from '@clerk/nextjs';
 import { Toaster } from "@/components/ui/toaster";
+// import "jodit/build/jodit.min.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

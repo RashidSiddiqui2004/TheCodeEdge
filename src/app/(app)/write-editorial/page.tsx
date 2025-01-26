@@ -14,7 +14,8 @@ import { useUser, SignInButton } from "@clerk/nextjs";
 import { QuestionDifficulty } from "@/enums/QuestionDifficulty";
 import { enumsTheCodeEdge } from "@/enums/EnumsTheCodeEdge";
 import { editorialSchema } from "@/schemas/editorialSchema";
-import { ProgrammingLanguages } from "@/enums/Languages";
+import { contestProblemLinks } from "@/constants";
+import { ContestPlatforms } from "@/enums/ContestPlatforms";
 
 interface ContestData {
     contestCode: string;
@@ -111,55 +112,23 @@ const Page = () => {
     };
 
     const handleProblemChange = (index: number, key: keyof ProblemInput, value: any) => {
-        setProblemInputs((prev) =>
-            prev.map((item, i) => (i === index ? { ...item, [key]: value } : item))
-        );
-    };
+        if (key == "problemName") {
+            setProblemInputs((prev) =>
+                prev.map((item, i) => (i === index ? { ...item, problemName: value } : item))
+            );
 
-    const handleSubmit2 = async () => {
-        setIsSubmitting(true);
-        try {
+            const problemUrl = "https://" + contestProblemLinks[contestPlatform as ContestPlatforms] + listOfProblems.find((problem) => problem.problemName === value)?.problemUrl;
 
-            setErrors({});
+            setProblemInputs((prev) =>
+                prev.map((item, i) => (i === index ? { ...item, link: problemUrl } : item))
+            );
 
-            const payload = {
-                title,
-                contestPlatform,
-                contestName: selectedContest,
-                problems: problemInputs,
-                clerkUserId: user?.id,
-                languageUsed: language,
-                overallDifficulty
-            };
-  
-            const validatedEditorial = editorialSchema.parse(payload);
-
-            console.log(validatedEditorial);
-
-            const response = await axios.post("/api/editorials", validatedEditorial);
-
-            console.log(response);
-
-            if (response.data.success) {
-                toast({
-                    title: "Editorial Submitted",
-                    description: "Your editorial has been successfully submitted for review.",
-                });
-
-                // push to published editorial -> route  
-                router.push(`/editorial/${}`);
-            }
-
-            toast({
-                title: "Editorial failed",
-                description: "Your editorial has been successfully submitted for review.",
-            });
-
-        } catch {
-            toast({ title: "Error", description: "Submission failed.", variant: "destructive" });
-        } finally {
-            setIsSubmitting(false);
+        } else {
+            setProblemInputs((prev) =>
+                prev.map((item, i) => (i === index ? { ...item, [key]: value } : item))
+            );
         }
+
     };
 
     const handleSubmit = async () => {
@@ -175,27 +144,27 @@ const Page = () => {
                 clerkUserId: user?.id,
                 languageUsed: language,
                 overallDifficulty,
-            }
+                introduction,
+                outro
+            };
 
             const validatedEditorial = editorialSchema.parse(payload);
 
-            console.log(validatedEditorial);
-
             const response = await axios.post("/api/editorials", validatedEditorial);
-
-            console.log("API response:", response.data)
 
             if (response.data.success) {
                 toast({
                     title: "Editorial Submitted",
                     description: "Your editorial has been successfully submitted for review.",
                 })
-                router.push("/editorials")
+                // title-editorialId
+                const editorialId = response.data.editorialId;
+
+                router.push(`/editorial/${editorialId}`);
             } else {
                 throw new Error(response.data.message || "Submission failed")
             }
         } catch (error) {
-            console.error("Submission error:", error)
             toast({
                 title: "Error",
                 description: "Submission failed. Please try again.",
@@ -245,7 +214,7 @@ const Page = () => {
 
                         {/* platform name */}
                         <div>
-                            <Label>Contest Platform</Label>
+                            <Label className="text-xl">Contest Platform</Label>
                             <Select value={contestPlatform} onValueChange={setContestPlatform}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select a platform" />
@@ -265,7 +234,7 @@ const Page = () => {
 
                         {/* contest name */}
                         <div>
-                            <Label>Contest</Label>
+                            <Label className="text-xl">Contest</Label>
                             <Select value={selectedContest} onValueChange={setSelectedContest}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select a contest" />
@@ -278,10 +247,15 @@ const Page = () => {
                                     ))}
                                 </SelectContent>
                             </Select>
+                            {errors.selectedContest && (
+                                <p className="text-red-500 text-sm">{errors.selectedContest}</p>
+                            )}
                         </div>
 
                         {/* Overall Difficulty */}
                         <Select value={overallDifficulty} onValueChange={setOverallDifficulty}>
+                            <Label className="text-xl mt-6">Overall Difficulty of the contest</Label>
+
                             <SelectTrigger>
                                 <SelectValue placeholder="Overall Difficulty" />
                             </SelectTrigger>
@@ -308,8 +282,31 @@ const Page = () => {
                             </SelectContent>
                         </Select>
 
+                        {/* introduction */}
+                        <div className="space-y-2  gap-2 justify-center items-center text-3xl">
+                            <Label htmlFor="title" className="text-2xl text-gray-400">Introduction</Label>
+                            <MonacoCodeEditorComponent
+                                value={introduction}
+                                onChange={setIntroduction}
+                            />
+                            {/* <textarea
+                                id="introduction"
+                                value={introduction}
+                                onChange={(e) => setIntroduction(e.target.value)}
+                                rows={1}
+                                className="w-full rounded flex text-3xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors resize-none overflow-hidden file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
+                                onInput={(e) => {
+                                    const target = e.target;
+                                    target.style.height = "auto";
+                                    target.style.height = `${target.scrollHeight}px`;
+                                }}
+                            /> */}
+                            {errors.introduction && <p className="text-red-500 text-sm">{errors.introduction}</p>}
+                        </div>
+
                         {problemInputs.map((problemInput, index) => (
                             <div key={index} className="mb-4">
+                                {/* Problem Name Dropdown */}
                                 <Label htmlFor={`problemName-${index}`}>Problem Name</Label>
                                 <Select
                                     value={problemInput.problemName}
@@ -326,20 +323,29 @@ const Page = () => {
                                         ))}
                                     </SelectContent>
                                 </Select>
+
+                                {/* Problem Link Input (Disabled) */}
                                 <Label htmlFor={`link-${index}`}>Link</Label>
                                 <input
                                     type="text"
                                     id={`link-${index}`}
-                                    value={problemInput.link}
-                                    onChange={(e) => handleProblemChange(index, "link", e.target.value)}
-                                    className="mt-2 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value={
+                                        problemInput.link
+                                        // "https://" + contestProblemLinks[contestPlatform as ContestPlatforms] + listOfProblems.find((problem) => problem.problemName === problemInput.problemName)?.problemUrl || ""
+                                    }
+                                    disabled={true}
+                                    className="mt-2 w-full border bg-inherit border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
+
                                 <Label htmlFor={`editorial-${index}`}>Editorial</Label>
+
                                 <MonacoCodeEditorComponent
-                                    value={problemInput.approach}
+                                    value={problemInput.approach || ""}
                                     language={language}
                                     onChange={(value) => handleProblemChange(index, "approach", value)}
                                 />
+
+                                {/* Remove Problem Button */}
                                 <button
                                     onClick={() => handleRemoveProblem(index)}
                                     className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -349,46 +355,25 @@ const Page = () => {
                             </div>
                         ))}
 
-                        {/* {problemInputs.map((problemInput, index) => (
-                            <div key={index} className="border p-4 rounded space-y-4">
-                                <div>
-                                    <Label>Problem</Label>
-                                    <Select
-                                        value={problemInput.problemName}
-                                        onValueChange={(value) => {
-                                            handleProblemChange(index, "problemName", value)
-                                            handleProblemChange(index, "link", problemInput.link)
-                                        }
-                                        }
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a problem" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {listOfProblems.map((problem) => (
-                                                <SelectItem key={problem.problemName} value={problem.problemName}>
-                                                    {problem.problemName}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div>
-                                    <Label>Approach</Label>
-                                    <MonacoCodeEditorComponent
-                                        placeholder="Enter your contest experience"
-                                        value={problemInput.approach}
-                                        language={"C++"}
-                                        onChange={(value) => handleProblemChange(index, "approach", value)}
-                                    />
-                                </div>
-
-                                <Button onClick={() => handleRemoveProblem(index)}>Remove Problem</Button>
-                            </div>
-                        ))} */}
-
                         <Button onClick={handleAddProblem}>Add Another Problem</Button>
+
+                        {/* outro */}
+                        <div className="space-y-2 gap-2 justify-center items-center text-3xl">
+                            <Label htmlFor="title" className="text-2xl text-gray-400">Outro</Label>
+                            <MonacoCodeEditorComponent
+                                value={outro}
+                                onChange={setOutro}
+                            />
+                            {/* <input
+                                id="extro"
+                                value={outro}
+                                onChange={(e) => setOutro(e.target.value)}
+                                className="w-full rounded flex text-3xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
+                            /> */}
+                            {errors.outro && <p className="text-red-500 text-sm">{errors.outro}</p>}
+                        </div>
+
+
                     </div>
                 </CardContent>
                 <CardFooter className="flex justify-end">

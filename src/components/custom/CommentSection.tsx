@@ -1,88 +1,140 @@
-import type React from "react"
+
+import React, { useEffect } from 'react'
+import EditorialNavigator from './EditorialNavigator'
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import Comment from "./Comment"
 
-interface CommentData {
-    id: number
-    author: string
-    content: string
-    avatarUrl: string
-    createdAt: Date
-    likes: number 
+import { Comment } from '@/model/Comment'
+import CommentBody from './CommentBody'
+import { Types } from 'mongoose'
+import axios from 'axios'
+import { useToast } from '@/hooks/use-toast'
+import { useUser } from '@clerk/nextjs'
+
+interface EditorialSideHeroProps {
+    isCommentSectionOpen: boolean;
+    updateCommentState: () => void;
+    commentsIds: Types.ObjectId[];
+    handleComment: (commentContent: string) => Promise<Boolean>;
 }
 
-const CommentSection: React.FC = () => {
-    const [comments, setComments] = useState<CommentData[]>([
-        {
-            id: 1,
-            author: "Alice Johnson",
-            content: "Great editorial! The explanation of the time complexity was particularly helpful.",
-            avatarUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=Alice",
-            createdAt: new Date(2023, 5, 15),
-            likes: 5, 
-        },
-        {
-            id: 2,
-            author: "Bob Smith",
-            content:
-                "I found the optimized solution interesting. Could you elaborate more on how memoization works in this context?",
-            avatarUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=Bob",
-            createdAt: new Date(2023, 5, 16),
-            likes: 3, 
-        },
-    ])
+const CommentSection: React.FC<EditorialSideHeroProps> = ({ commentsIds, handleComment, isCommentSectionOpen }) => {
 
-    const [newComment, setNewComment] = useState("")
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [comments, setComments] = useState<Comment[]>();
+    const [newComment, setNewComment] = useState("");
+    const [submittingComment, setsubmittingComment] = useState<boolean>(false);
 
-    const handleCommentSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        if (newComment.trim()) {
-            const comment: CommentData = {
-                id: comments.length + 1,
-                author: "Current User",
-                content: newComment,
-                avatarUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=CurrentUser",
-                createdAt: new Date(),
-                likes: 0, 
+    const handleNewComment = async () => {
+        if (!newComment.trim()) return;
+
+        setsubmittingComment(true);
+
+        try {
+            const isCommented = await handleComment(newComment);
+
+            if (isCommented) {
+                setNewComment("");
+                toast({
+                    title: "Comment added"
+                });
             }
-            setComments([comment, ...comments])
-            setNewComment("")
+            else {
+                toast({
+                    title: "Failed to comment, pls try again.."
+                });
+            }
+        } catch (error) {
+            toast({
+                title: "Failed to comment, pls try again.."
+            });
+        } finally {
+            setsubmittingComment(false);
         }
-    }
+    };
+
+    useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                const fetchedComments = await Promise.all(
+                    commentsIds.map(async (commentId) => {
+                        const response = await axios.get(`/api/editorials/comment?commentId=${commentId}`);
+                        if (response.data.success) {
+                            return response.data.comment;
+                        } else {
+                            console.error("Failed to fetch comment:", response.data.message);
+                            return null;
+                        }
+                    })
+                );
+
+                setComments(fetchedComments.filter((comment: Comment) => comment !== null));
+            } catch (error) {
+                console.error("Error fetching comments:", error);
+            }
+        };
+
+        if (commentsIds?.length > 0) {
+            fetchComments();
+        }
+    }, [commentsIds]);
 
     return (
-        <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4">Comments</h2>
-            <form onSubmit={handleCommentSubmit} className="mb-6">
-                <div className="flex items-start space-x-4">
-                    <Avatar>
-                        <AvatarImage src="https://api.dicebear.com/6.x/avataaars/svg?seed=CurrentUser" alt="Current User" />
-                        <AvatarFallback>CU</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                        <Textarea
-                            placeholder="Add a comment..."
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            className="w-full"
-                        />
-                        <Button type="submit" className="mt-2">
-                            Post Comment
-                        </Button>
-                    </div>
+        <div
+            className={`hidden md:flex bg-white text-gray-800 flex-col items-center 
+                p-6 shadow-md transform transition-transform duration-1000 ease-in-out ${isCommentSectionOpen ? "translate-x-0" : "translate-x-full"}
+                }`}
+        >
+            <h2 className="text-lg font-semibold mb-4 self-start">
+                Comments ({commentsIds.length})
+            </h2>
+
+            <div className="w-full flex items-start gap-4 mb-6">
+                <Avatar className="shrink-0">
+                    <AvatarImage
+                        src={user?.imageUrl}
+                        alt={user?.username || "user"}
+                        className="rounded-full"
+                    />
+                    <AvatarFallback>{user?.username?.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                    <Textarea
+                        placeholder="Add a comment..."
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        className="w-full resize-none text-sm border-gray-300 rounded-lg focus:ring focus:ring-indigo-300 focus:outline-none"
+                        rows={2}
+                    />
+                    <Button
+                        onClick={handleNewComment}
+                        className="mt-2 w-fit text-sm font-medium bg-slate-900 text-white hover:bg-indigo-700 rounded-lg"
+                        disabled={submittingComment}
+                    >
+                        {submittingComment ? "Posting..." : "Post Comment"}
+                    </Button>
                 </div>
-            </form>
-            <div className="space-y-4">
-                {comments.map((comment) => (
-                    <Comment key={comment.id} {...comment} />
-                ))}
+            </div>
+
+            <div className="w-full divide-y divide-gray-200">
+                {comments && comments?.length > 0 ? (
+                    comments.map((comment, index) => (
+                        <div key={index}>
+                            <CommentBody comment={comment} />
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-sm text-gray-500 text-center mt-4">
+                        No comments yet. Be the first to comment!
+                    </p>
+                )}
             </div>
         </div>
+
     )
 }
 
 export default CommentSection
-
