@@ -25,16 +25,16 @@ const Footer = () => {
                     <h2 className="text-lg font-semibold text-white mb-4">Quick Links</h2>
                     <ul className="space-y-2">
                         <li>
-                            <a href="/home" className="hover:text-white transition-colors">Home</a>
+                            <Link href="/" className="hover:text-white transition-colors">Home</Link>
                         </li>
                         <li>
-                            <a href="/leaderboard" className="hover:text-white transition-colors">Leaderboard</a>
+                            <Link href="/leaderboard" className="hover:text-white transition-colors">Leaderboard</Link>
                         </li>
                         <li>
-                            <a href="/editorials" className="hover:text-white transition-colors">Insightful Editorials</a>
+                            <Link href="/editorials" className="hover:text-white transition-colors">Insightful Editorials</Link>
                         </li>
                         <li>
-                            <a href="/about" className="hover:text-white transition-colors">About Us</a>
+                            <Link href="/about" className="hover:text-white transition-colors">About Us</Link>
                         </li>
                     </ul>
                 </div>
@@ -45,15 +45,18 @@ const Footer = () => {
 
                     <div className="flex items-center space-x-4 mt-4">
                         <Link
-                            href={'https://www.linkedin.com/in/rashid-siddiqui2004'}>
+                            href={'https://www.linkedin.com/in/rashid-siddiqui2004'}
+                            target='_blank'>
                             <Linkedin className="text-3xl" />
                         </Link>
                         <Link
-                            href={'https://github.com/RashidSiddiqui2004'}>
+                            href={'https://github.com/RashidSiddiqui2004'}
+                            target='_blank'>
                             <Github className="text-3xl" />
                         </Link>
                         <Link
-                            href={'https://leetcode.com/rashid_sid'}>
+                            href={'https://leetcode.com/rashid_sid'}
+                            target='_blank'>
                             <Leetcode className="text-3xl" />
                         </Link>
 

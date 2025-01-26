@@ -2,6 +2,7 @@ import { Author } from "@/components/custom/EditorialHeader";
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 
+// to get the author details (username and imageurl) using author's ID
 export async function GET(request: Request) {
     await dbConnect();
 

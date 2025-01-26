@@ -1,6 +1,5 @@
-
-import EditorialBody from '@/components/custom/EditorialBody';
-import Navbar from '@/components/custom/Navbar';
+ 
+import EditorialBody from '@/components/custom/EditorialBody'; 
 import React from 'react'
 
 export default async function Page({
@@ -13,8 +12,7 @@ export default async function Page({
     // const titleSlug = slug?.replace(`-${editorialId}`, ""); // keeping title slug for future uses
 
     return (
-        <>
-            <Navbar />
+        <> 
             {
                 editorialId &&
                 <EditorialBody editorialid={editorialId} />

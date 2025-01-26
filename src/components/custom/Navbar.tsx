@@ -27,15 +27,15 @@ const Navbar = () => {
     const userName = user?.firstName?.toLowerCase() + "_" + user?.lastName?.toLowerCase();
 
     return (
-        <nav className="flex justify-between py-3 px-3 bg-slate-200 text-black text-fell">
+        <nav className="flex justify-between py-3 px-3 bg-slate-200 text-slate-800 text-sm text-fell">
             <Link href="/" className="text-lg hover:text-gray-800 transition-colors">
                 {APP_NAME}
             </Link>
             <div className="flex items-center space-x-4">
-                <Link href="/editorials" className="text-sm hover:text-gray-200 transition-colors hidden md:block">
+                <Link href="/editorials" className="text-sm hover:text-gray-900  transition-colors hidden md:block">
                     Editorials
                 </Link>
-                <Link href="/about" className="text-sm hover:text-gray-200 transition-colors hidden md:block">
+                <Link href="/about" className="text-sm hover:text-gray-900 transition-colors hidden md:block">
                     About
                 </Link>
 

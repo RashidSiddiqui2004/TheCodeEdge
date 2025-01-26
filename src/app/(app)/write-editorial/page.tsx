@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ import { enumsTheCodeEdge } from "@/enums/EnumsTheCodeEdge";
 import { editorialSchema } from "@/schemas/editorialSchema";
 import { contestProblemLinks } from "@/constants";
 import { ContestPlatforms } from "@/enums/ContestPlatforms";
+import TextDisplay from "@/components/ui/TextDisplay";
 
 interface ContestData {
     contestCode: string;
@@ -46,6 +47,7 @@ const Page = () => {
     const { ContestPlatforms, QuestionDifficulty, ProgrammingLanguages } = enumsTheCodeEdge;
 
     const [title, setTitle] = useState<string>("");
+
     const [contestPlatform, setContestPlatform] = useState<string>(ContestPlatforms.CodeChef);
 
     const [language, setLanguage] = useState<string>(ProgrammingLanguages.Java);
@@ -54,6 +56,7 @@ const Page = () => {
     const [introduction, setIntroduction] = useState<string>("");
     const [outro, setOutro] = useState<string>("");
     const [tags, setTags] = useState<string[]>([]);
+    const [currentTag, setCurrentTag] = useState('');
 
     const [listOfContests, setListOfContests] = useState<ContestData[]>([]);
     const [selectedContest, setSelectedContest] = useState<string>("");
@@ -175,7 +178,30 @@ const Page = () => {
         }
     }
 
+    const handleInputChange = (e: any) => {
+        const newTag = e.target.value;
+        setCurrentTag(newTag);
+    };
+
+    const handleInputKeyDown = (e: any) => {
+        if (e.key === 'Enter' && currentTag.trim() !== '') {
+            setTags([...tags, currentTag.trim()]);
+            setCurrentTag('');
+        }
+    };
+
+    const handleTagRemove = (index: number) => {
+        const updatedTags = [...tags];
+        updatedTags.splice(index, 1);
+        setTags(updatedTags);
+    };
+
+    const titleRef = useRef<HTMLTextAreaElement>(null);
+
     useEffect(() => {
+        if (titleRef.current) {
+            titleRef.current.focus();
+        }
         fetchLatestContestsData();
     }, [contestPlatform]);
 
@@ -203,12 +229,27 @@ const Page = () => {
                         <div className="space-y-2 flex gap-2 justify-center items-center text-3xl">
                             <Label htmlFor="title" className="text-2xl text-gray-400">Title</Label>
                             <span className="border-r-2 border-white w-1 h-10"></span>
-                            <input
+                            <textarea
                                 id="title"
+                                ref={titleRef}
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="Editorial title..."
+                                rows={1}
+                                className="w-full rounded flex text-3xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors resize-none overflow-hidden file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
+                                onInput={(e) => {
+                                    const target = e.target;
+                                    target.style.height = "auto";
+                                    target.style.height = `${target.scrollHeight}px`;
+                                }}
+                            />
+                            {/* <input
+                                id="title"
+                                ref={titleRef}
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 className="w-full rounded flex text-3xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
-                            />
+                            /> */}
                             {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
                         </div>
 
@@ -268,8 +309,11 @@ const Page = () => {
                             </SelectContent>
                         </Select>
 
-                        {/* language */}
+                        {/* programming language used */}
                         <Select value={language} onValueChange={setLanguage}>
+
+                            <Label className="text-xl mt">Language used in the contest</Label>
+
                             <SelectTrigger>
                                 <SelectValue placeholder="Language Used" />
                             </SelectTrigger>
@@ -284,28 +328,26 @@ const Page = () => {
 
                         {/* introduction */}
                         <div className="space-y-2  gap-2 justify-center items-center text-3xl">
-                            <Label htmlFor="title" className="text-2xl text-gray-400">Introduction</Label>
-                            <MonacoCodeEditorComponent
-                                value={introduction}
-                                onChange={setIntroduction}
-                            />
-                            {/* <textarea
+                            <Label htmlFor="title" className="text-2xl text-gray-400">Contest Experience</Label> 
+                            <textarea
                                 id="introduction"
                                 value={introduction}
                                 onChange={(e) => setIntroduction(e.target.value)}
+                                placeholder="Write the contest experience here..."
                                 rows={1}
-                                className="w-full rounded flex text-3xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors resize-none overflow-hidden file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="w-full rounded flex text-xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors resize-none overflow-hidden file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
                                 onInput={(e) => {
                                     const target = e.target;
                                     target.style.height = "auto";
                                     target.style.height = `${target.scrollHeight}px`;
                                 }}
-                            /> */}
+                            />
+
                             {errors.introduction && <p className="text-red-500 text-sm">{errors.introduction}</p>}
                         </div>
 
                         {problemInputs.map((problemInput, index) => (
-                            <div key={index} className="mb-4">
+                            <div key={index} className="mb-4 flex flex-col gap-y-3">
                                 {/* Problem Name Dropdown */}
                                 <Label htmlFor={`problemName-${index}`}>Problem Name</Label>
                                 <Select
@@ -325,24 +367,39 @@ const Page = () => {
                                 </Select>
 
                                 {/* Problem Link Input (Disabled) */}
-                                <Label htmlFor={`link-${index}`}>Link</Label>
-                                <input
-                                    type="text"
+                                <Label htmlFor={`link-${index}`} className="mt-4">Problem link</Label>
+                                <TextDisplay
                                     id={`link-${index}`}
                                     value={
-                                        problemInput.link
+                                        problemInput.link || ""
                                         // "https://" + contestProblemLinks[contestPlatform as ContestPlatforms] + listOfProblems.find((problem) => problem.problemName === problemInput.problemName)?.problemUrl || ""
                                     }
-                                    disabled={true}
-                                    className="mt-2 w-full border bg-inherit border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-fit min-w-96 h-10 border-gray-300 rounded-full"
                                 />
 
-                                <Label htmlFor={`editorial-${index}`}>Editorial</Label>
+                                <Label htmlFor={`editorial-${index}-approach`}>Approach</Label>
+
+                                <textarea
+                                    id="introduction"
+                                    value={problemInput.approach}
+                                    onChange={(e) => handleProblemChange(index, "approach", e.target.value)}
+                                    placeholder="Write the approach for this problem here..."
+                                    rows={1}
+                                    className="w-full rounded flex text-xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors resize-none overflow-hidden file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
+                                    onInput={(e) => {
+                                        const target = e.target;
+                                        target.style.height = "auto";
+                                        target.style.height = `${target.scrollHeight}px`;
+                                    }}
+                                />
+
+                                <Label htmlFor={`editorial-${index}-code`}>Code</Label>
 
                                 <MonacoCodeEditorComponent
-                                    value={problemInput.approach || ""}
+                                    value={problemInput.code || ""}
                                     language={language}
-                                    onChange={(value) => handleProblemChange(index, "approach", value)}
+                                    placeholder="// Write/Paste your solution here"
+                                    onChange={(value) => handleProblemChange(index, "code", value)}
                                 />
 
                                 {/* Remove Problem Button */}
@@ -355,24 +412,61 @@ const Page = () => {
                             </div>
                         ))}
 
-                        <Button onClick={handleAddProblem}>Add Another Problem</Button>
+                        <Button onClick={handleAddProblem}>Add a Problem</Button>
 
                         {/* outro */}
                         <div className="space-y-2 gap-2 justify-center items-center text-3xl">
                             <Label htmlFor="title" className="text-2xl text-gray-400">Outro</Label>
-                            <MonacoCodeEditorComponent
+                            {/* <MonacoCodeEditorComponent
                                 value={outro}
                                 onChange={setOutro}
-                            />
-                            {/* <input
-                                id="extro"
-                                value={outro}
-                                onChange={(e) => setOutro(e.target.value)}
-                                className="w-full rounded flex text-3xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
                             /> */}
+                            <textarea
+                                id="introduction"
+                                value={outro}
+                                placeholder="Write outro here..."
+                                onChange={(e) => setOutro(e.target.value)}
+                                rows={1}
+                                className="w-full rounded flex text-xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors resize-none overflow-hidden file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
+                                onInput={(e) => {
+                                    const target = e.target;
+                                    target.style.height = "auto";
+                                    target.style.height = `${target.scrollHeight}px`;
+                                }}
+                            />
                             {errors.outro && <p className="text-red-500 text-sm">{errors.outro}</p>}
                         </div>
 
+
+                        {/* tags input */}
+                        <div className="mt-4">
+                            <h2 className='text-white flex justify-start text-xl mb-4 font-semibold ml-3'>Tags</h2>
+
+                            <div className="flex flex-wrap gap-2 mb-4">
+                                {tags.map((tag, index) => (
+                                    <div className='rounded-full bg-slate-500 py-1 px-4 shadow-md shadow-green-300
+                    hover:scale-95 transition-all' key={index}>
+                                        {tag}
+                                        <button
+                                            onClick={() => handleTagRemove(index)}
+                                            className={`rounded-full text-white px-3 py-1`}
+                                        >
+                                            &#x2715;
+                                        </button>
+                                    </div>
+
+                                ))}
+                            </div>
+
+                            <input
+                                type="text"
+                                value={currentTag}
+                                onChange={handleInputChange}
+                                onKeyDown={handleInputKeyDown}
+                                placeholder="Type and press Enter to add tags"
+                                className=' bg-inherit mb-4 px-2 py-2 w-full rounded-lg inputbox text-white placeholder:text-gray-200 outline-none'
+                            />
+                        </div>
 
                     </div>
                 </CardContent>

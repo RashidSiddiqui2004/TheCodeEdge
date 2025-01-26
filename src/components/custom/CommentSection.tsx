@@ -1,16 +1,17 @@
 
-import React, { useEffect } from 'react' 
+import React, { useCallback, useEffect } from 'react'
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
 import { Comment } from '@/model/Comment'
 import CommentBody from './CommentBody'
 import { Types } from 'mongoose'
 import axios from 'axios'
 import { useToast } from '@/hooks/use-toast'
 import { useUser } from '@clerk/nextjs'
+import { IoIosClose } from "react-icons/io";
+
 
 interface EditorialSideHeroProps {
     isCommentSectionOpen: boolean;
@@ -19,7 +20,7 @@ interface EditorialSideHeroProps {
     handleComment: (commentContent: string) => Promise<boolean>;
 }
 
-const CommentSection: React.FC<EditorialSideHeroProps> = ({ commentsIds, handleComment, isCommentSectionOpen }) => {
+const CommentSection: React.FC<EditorialSideHeroProps> = ({ commentsIds, handleComment, isCommentSectionOpen, updateCommentState }) => {
 
     const { user } = useUser();
     const { toast } = useToast();
@@ -55,8 +56,8 @@ const CommentSection: React.FC<EditorialSideHeroProps> = ({ commentsIds, handleC
         }
     };
 
-    useEffect(() => {
-        const fetchComments = async () => {
+    const fetchComments = useCallback(
+        async (commentsIds: Types.ObjectId[]) => {
             try {
                 const fetchedComments = await Promise.all(
                     commentsIds.map(async (commentId) => {
@@ -74,22 +75,31 @@ const CommentSection: React.FC<EditorialSideHeroProps> = ({ commentsIds, handleC
             } catch (error) {
                 console.error("Error fetching comments:", error);
             }
-        };
+        },
+        []
+    );
+
+    useEffect(() => {
 
         if (commentsIds?.length > 0) {
-            fetchComments();
+            fetchComments(commentsIds);
         }
     }, [commentsIds]);
 
     return (
         <div
-            className={`hidden md:flex bg-white text-gray-800 flex-col items-center 
+            className={`hidden md:flex absolute right-0 w-[30vw] min-h-screen bg-white text-gray-800 flex-col items-center 
                 p-6 shadow-md transform transition-transform duration-1000 ease-in-out ${isCommentSectionOpen ? "translate-x-0" : "translate-x-full"}
                 }`}
         >
-            <h2 className="text-lg font-semibold mb-4 self-start">
-                Comments ({commentsIds.length})
-            </h2>
+
+            <div className='flex flex-row justify-between w-full'>
+                <h2 className="text-lg font-semibold mb-4">
+                    Comments ({commentsIds.length})
+                </h2>
+                <IoIosClose className='text-3xl mr-5 cursor-pointer' onClick={updateCommentState} />
+            </div>
+
 
             <div className="w-full flex items-start gap-4 mb-6">
                 <Avatar className="shrink-0">

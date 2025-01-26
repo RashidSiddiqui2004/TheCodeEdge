@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { ThumbsUp, MessageSquare, ChevronDown, ChevronUp } from "lucide-react"
+import { ThumbsUp, MessageSquare, ChevronDown, ChevronUp, Moon, Sun } from "lucide-react"
 import CodeEditor from "./CodeEditor"
 import { cn } from "@/lib/utils"
 
@@ -20,11 +20,15 @@ const SampleEditorial = () => {
 
 console.log(fibonacci(10)); // Output: 55`
 
+    function toggleDarkMode(): void {
+        setIsDarkMode(!isDarkMode);
+    }
+
     return (
         <div
-            className={cn("col-span-8 mx-4 transition-colors duration-300 h-full", isDarkMode ? "dark bg-gray-900" : "bg-gray-100")}
+            className={cn("col-span-8 mx-4 transition-colors duration-300", isDarkMode ? "dark bg-gray-900" : "bg-gray-100")}
         >
-            <Card className="shadow-lg">
+            <Card className="bg-inherit flex flex-col flex-grow h-full ">
                 <CardHeader>
                     <div className="flex justify-between items-start">
                         <div className="space-y-2">
@@ -83,10 +87,10 @@ console.log(fibonacci(10)); // Output: 55`
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
-                            {/* <Button variant="outline" size="icon" onClick={toggleDarkMode}>
+                            <Button variant="outline" size="icon" onClick={toggleDarkMode}>
                                 {isDarkMode ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
                                 <span className="sr-only">Toggle dark mode</span>
-                            </Button> */}
+                            </Button>
                         </div>
                     </div>
                 </CardHeader>
@@ -148,17 +152,7 @@ console.log(fibonacciMemo(10)); // Output: 55`}
                                 </p>
                             </>
                         )} */}
-                        <Button onClick={() => setShowFullContent(!showFullContent)} className="mt-4">
-                            {showFullContent ? (
-                                <>
-                                    Show Less <ChevronUp className="ml-2 h-4 w-4" />
-                                </>
-                            ) : (
-                                <>
-                                    Show More <ChevronDown className="ml-2 h-4 w-4" />
-                                </>
-                            )}
-                        </Button>
+                        
                     </div>
                 </CardContent>
             </Card>

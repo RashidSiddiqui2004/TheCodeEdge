@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import Editor from "@monaco-editor/react";
-
+import { Editor as CodeEditor } from '@monaco-editor/react';
 interface CodeEditorProps {
     value: string;
     onChange: (value: string) => void;
@@ -59,8 +58,8 @@ export const MonacoCodeEditorComponent: React.FC<CodeEditorProps> = ({
             </div>
 
             {/* Monaco Editor */}
-            <Editor
-                height="400px"
+            <CodeEditor
+                height="40vh"
                 theme={isDarkMode ? "vs-dark" : "light"}
                 language={language}
                 value={value}

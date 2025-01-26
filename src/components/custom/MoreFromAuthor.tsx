@@ -34,13 +34,10 @@ const MoreFromAuthor: React.FC<MoreFromAuthorProps> = ({ author, authorId, curre
             if (response.data.success) {
                 const allRecentEditorials = response.data.recentEditorials;
 
-                // Filter out the currentEditorialId and select at most 4 recent editorials
- 
+                // Filter out the currentEditorialId and select at most 4 recent editorials 
                 const filteredEditorials = allRecentEditorials
                     .filter((editorial: Editorial) => editorial._id !== currentEditorialId)
-                    .slice(0, 4);
-
-                console.log(filteredEditorials);
+                    .slice(0, 4); 
                 
                 setRecentEditorials(filteredEditorials);
             } else {
@@ -49,8 +46,7 @@ const MoreFromAuthor: React.FC<MoreFromAuthorProps> = ({ author, authorId, curre
         } catch (error) {
             console.error("Error fetching recent editorials:", error);
         }
-    };
-
+    }; 
 
     useEffect(() => {
         fetchRecentEditorials();

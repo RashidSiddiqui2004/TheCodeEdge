@@ -1,7 +1,9 @@
 import dbConnect from "@/lib/dbConnect"
 import UserModel from "@/model/User"
 
+// to fetch the profile of the user using its username (for external users)
 export async function GET(request: Request) {
+    
     await dbConnect();
 
     try {

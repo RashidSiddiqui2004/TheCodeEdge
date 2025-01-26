@@ -9,11 +9,13 @@ import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import CodeEditor from "./CodeEditor"; 
-import { MonacoReadOnlyEditor } from "./MonacoReadOnlyEditor";
 import CommentSection from "./CommentSection";
-import { useUser } from "@clerk/nextjs"; 
+import { useUser } from "@clerk/nextjs";
 import EditorialNavigator from "./EditorialNavigator";
 import MoreFromAuthor from "./MoreFromAuthor";
+import { BreadCrumbComponent } from "./BreadCrumbComponent"; 
+import TextRenderer from "./TextRenderer";
+import { FaLink } from "react-icons/fa";
 
 interface EditorialBodyProps {
     editorialid: string;
@@ -30,8 +32,6 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
     const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
 
     const handleNavigate = (problemName: string) => {
-        console.log("Navigate to question:", problemName);
-
         const targetElement = document.getElementById(problemName);
         if (targetElement) {
             targetElement.scrollIntoView({
@@ -100,6 +100,8 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
 
             if (response.data.success) {
                 setEditorial(response.data.editorial);
+                console.log(response.data.editorial);
+
                 const author_id = response.data.editorial.author;
                 fetchAuthorName(author_id);
             } else {
@@ -161,16 +163,24 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
 
     return (
 
-        <div className="md:grid md:grid-cols-5 min-h-screen bg-slate-800 text-white">
+        <div className="md:grid md:grid-cols-5 h-screen relative bg-slate-800 text-white">
 
-            <Card className="col-span-4 md:py-4 mx-0 md:px-6 min-h-screen bg-inherit
-                 text-white rounded-none border-none pb-2 md:pb-10">
+            <Card className="col-span-4 md:py-4 mx-0 md:px-6 flex-1 overflow-y-auto scrollbar-hide bg-inherit
+                 text-white rounded-none border-none pb-2 md:pb-10"
+                style={{
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
+                }}>
 
-                <EditorialHeader editorial={editorial} author={author}
-                    handleUpdateLike={handleUpdateLike} updateCommentState={handleCommentSection} />
+                <BreadCrumbComponent />
+
+                <div id="home">
+                    <EditorialHeader editorial={editorial} author={author}
+                        handleUpdateLike={handleUpdateLike} updateCommentState={handleCommentSection} />
+                </div>
+
 
                 <CardContent className="space-y-6 mx-0">
-                    {/* Introduction */}
 
                     {
                         editorial.introduction &&
@@ -183,38 +193,39 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                         </section>
                     }
 
-
-                    {/* Problems */}
                     <section className="">
                         {editorial.problems.map((problem, index) => (
                             <div key={index} className="border-t border-gray-500 pt-4" id={problem.problemName}>
                                 {/* Problem Name */}
-                                <h2 className="text-xl font-semibold text-purple-400">
-                                    {problem.problemName}
-                                </h2>
 
-                                {problem.link && (
-                                    <Link
-                                        href={problem.link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-400 hover:underline"
-                                    >
-                                        View Problem
-                                    </Link>
-                                )}
+                                <div className=" flex gap-x-4 ">
+                                    <h2 className="text-xl font-semibold text-slate-200">
+                                        {problem.problemName}
+                                    </h2>
+
+                                    {problem.link && (
+                                        <Link
+                                            href={problem.link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-400 hover:underline"
+                                        >
+                                            <FaLink className=" text-lg my-1"/>
+                                        </Link>
+                                    )}
+                                </div> 
 
                                 <div className="mt-4">
                                     <h3 className="text-lg font-medium text-gray-300">
-                                        Approach:
+                                        Approach
                                     </h3>
-                                    <MonacoReadOnlyEditor value={problem.approach} />
+                                    <TextRenderer content={problem.approach} />
                                 </div>
 
                                 {problem.code && (
                                     <div className="mt-6">
                                         <h3 className="text-lg font-medium text-gray-300">
-                                            Solution Code:
+                                            Solution Code
                                         </h3>
                                         <CodeEditor code={problem.code} isDarkMode={true} />
                                     </div>
@@ -222,7 +233,6 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                             </div>
                         ))}
                     </section>
-
 
                     {editorial.outro &&
                         <section>
@@ -236,7 +246,6 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                         </section>
                     }
 
-                    {/* Tags */}
                     <section>
                         <EditorialTags tags={editorial.tags || []} />
                     </section>

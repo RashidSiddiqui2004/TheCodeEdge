@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
@@ -9,8 +9,8 @@ import { PlatformIconMap } from "@/components/my_icons";
 import { User } from "@/model/User";
 import EditorialCard from "@/components/custom/EditorialCard";
 import { Editorial } from "@/model/Editorial";
-import { ObjectId } from "mongoose";
 import TextDisplay from "@/components/ui/TextDisplay";
+import Image from "next/image";
 
 export interface SocialLinkInterface {
     github?: string;
@@ -33,7 +33,6 @@ const SocialIcon: React.FC<SocialIconProps> = ({ platform, url }) => {
     }
 
     if (!Icon) {
-        console.error(`No icon found for platform: ${platform}`);
         return null;
     }
 
@@ -88,48 +87,62 @@ export default function Page({
     const fetchEditorials = async () => {
         try {
             if (userData) {
-                const response = await axios.get("/api/editorials", { params: { userId: userData.id } });
+                const response = await axios.get("/api/editorials", {
+                    params: { objectId: userData._id },
+                });
+
                 if (response.data.success) {
                     setEditorials(response.data.userEditorials);
+                } else {
+                    toast({
+                        title: "Error fetching editorials",
+                        description: response.data.message || "Failed to fetch editorials.",
+                    });
                 }
             }
         } catch (error) {
+            console.error("Error fetching editorials:", error);
             toast({
                 title: "Error fetching user editorials!",
-                description: "An unexpected error occurred."
+                description: "An unexpected error occurred.",
             });
         }
     };
 
+
     useEffect(() => {
         fetchUserData();
         fetchEditorials();
-    }, [fetchUserData, fetchEditorials, username]);
+    }, []);
 
     return (
         <div className="py-8 flex justify-center items-center bg-slate-950 text-fell">
 
             <Card className="mx-auto bg-inherit text-white">
-                <CardHeader>
-                    <CardTitle className="text-2xl font-bold">User Profile</CardTitle>
-                </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
 
                         <div>
                             <div className="flex items-center space-x-4">
-                                <img
-                                    id="profileImage"
-                                    src={userData?.imageUrl || "/default-profile.png"}
-                                    alt="Profile"
-                                    className="w-12 h-12 rounded-full border"
-                                />
+
+                                {
+                                    userData?.imageUrl &&
+                                    <Image
+                                        id="profileImage"
+                                        src={userData?.imageUrl}
+                                        alt="Profile"
+                                        width={10}
+                                        height={10}
+                                        className="w-12 h-12 rounded-full border"
+                                    />
+                                }
+
                                 <span>{userData?.username || "N/A"}</span>
                             </div>
                         </div>
                         <div>
                             <Label htmlFor="email">E-Mail</Label>
-                            <TextDisplay id="email" value={userData?.email || "N/A"} />
+                            <TextDisplay id="email" value={userData?.email || "N/A"} isLink={false} />
                         </div>
 
                         <div>
@@ -137,6 +150,7 @@ export default function Page({
                             <TextDisplay
                                 value={userData?.bio || "N/A"}
                                 className="resize-none"
+                                isLink={false}
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
@@ -159,15 +173,7 @@ export default function Page({
                                 return (
                                     <div key={index}>
                                         <EditorialCard
-                                            title={editorial.title}
-                                            id={(editorial._id as ObjectId).toString()}
-                                            author={editorial.author.toString()}
-                                            platform={editorial.contestPlatform}
-                                            difficulty={editorial.overallDifficulty}
-                                            likes={editorial.likes}
-                                            contest={editorial.contestName}
-                                            language={editorial.languageUsed}
-                                            comments={editorial.comments.length}
+                                            editorial={editorial}
                                         />
                                     </div>
                                 )

@@ -1,6 +1,7 @@
 import dbConnect from "@/lib/dbConnect"
 import UserModel from "@/model/User"
 
+// to create/update profile of the user
 export async function POST(request: Request) {
     await dbConnect();
 
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
     }
 }
 
+// to fetch the profile of the user using its clerkID
 export async function GET(request: Request) {
     await dbConnect();
 
