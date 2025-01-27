@@ -1,5 +1,5 @@
 
-import { SocialLinkInterface } from '@/app/(app)/users/[id]/page';
+import { SocialLinkInterface } from '@/app/(app)/user/[id]/page';
 import { AuthorBadge } from '@/enums/AuthorBadges';
 import mongoose, { Schema, Document, ObjectId } from 'mongoose';
 
@@ -71,7 +71,7 @@ const UserSchema: Schema<User> = new Schema(
             type: [mongoose.Schema.Types.ObjectId],
             ref: "Editorial",
             default: [],
-        }, 
+        },
     },
     {
         timestamps: true,

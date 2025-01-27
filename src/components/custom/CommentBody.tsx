@@ -4,18 +4,43 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { formatDistanceToNow } from 'date-fns'
-import { Comment } from '@/model/Comment'
 import { Author } from './EditorialHeader'
 import axios from 'axios'
 import { PiHandsClapping } from "react-icons/pi";
+import { useToast } from '@/hooks/use-toast'
+import { Comment } from '@/model/Comment'
 
 interface CommentProps {
-    comment: Comment
+    initialComment: Comment
 }
 
-const CommentBody: React.FC<CommentProps> = ({ comment }) => {
+const CommentBody: React.FC<CommentProps> = ({ initialComment }) => {
 
+    const { toast } = useToast();
+    const [comment, setComment] = useState<Comment>(initialComment);
     const [author, setAuthor] = useState<Author>();
+
+    const likeComment = async () => {
+        try {
+            const response = await axios.put("/api/comment", {
+                commentId: comment._id,
+            });
+
+            if (response.data.success) {
+                setComment(prevComment => ({
+                    ...prevComment.toObject(),
+                    likes: prevComment.likes + 1,
+                }));
+            } else {
+                toast({
+                    title: "Failed to like the comment"
+                });
+            }
+
+        } catch (error) {
+            console.error("Error fetching comments:", error);
+        }
+    }
 
     useEffect(() => {
         const fetchAuthorName = async () => {
@@ -54,7 +79,7 @@ const CommentBody: React.FC<CommentProps> = ({ comment }) => {
                 <p className="mt-2 italic">{comment.content}</p>
             </CardContent>
             <CardFooter className="flex justify-between p-0 mx-3 mb-1">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className='cursor-pointer' onClick={likeComment}>
                     <PiHandsClapping className="h-4 w-4" />
                     {comment.likes} Likes
                 </Button>

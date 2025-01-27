@@ -23,10 +23,8 @@ export async function GET(request: Request) {
             );
         }
 
-        const editorial = await EditorialModel.findById(editorialId);
-
-        console.log(editorial); 
-
+        const editorial = await EditorialModel.findById(editorialId).populate("comments");
+ 
         if (!editorial) {
             return new Response(
                 JSON.stringify({ success: false, message: "Editorial not found." }),
@@ -37,7 +35,7 @@ export async function GET(request: Request) {
         return new Response(
             JSON.stringify({
                 success: true,
-                editorial,
+                comments: editorial.comments,
                 message: "Editorial fetched successfully.",
             }),
             { status: 200, headers: { "Content-Type": "application/json" } }

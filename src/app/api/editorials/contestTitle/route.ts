@@ -1,12 +1,14 @@
 import dbConnect from "@/lib/dbConnect";
 import EditorialModel from "@/model/Editorial";
 
+// fetch editorial for a given contest by title
+
 export async function GET(request: Request) {
     try {
         await dbConnect();
 
         const { searchParams } = new URL(request.url);
-        const title = searchParams.get("title");
+        const title = searchParams.get("contestTitle");
 
         if (!title) {
             return new Response(

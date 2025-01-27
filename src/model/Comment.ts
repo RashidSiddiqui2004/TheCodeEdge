@@ -1,11 +1,11 @@
-import mongoose, { Schema, type Document } from "mongoose"
+import mongoose, { ObjectId, Schema, type Document } from "mongoose"
 
 export interface Comment extends Document {
     content: string
     author: string
-    editorial: mongoose.Types.ObjectId
+    editorial: ObjectId
     likes: number
-    replies: mongoose.Types.ObjectId[]
+    replies: ObjectId[]
     createdAt: Date
     updatedAt: Date
 }
@@ -25,7 +25,7 @@ const CommentSchema: Schema<Comment> = new Schema(
             required: [true, "Comment author is required"],
         },
         editorial: {
-            type: Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: "Editorial",
             required: [true, "Associated editorial is required"],
         },
@@ -35,7 +35,7 @@ const CommentSchema: Schema<Comment> = new Schema(
         },
         replies: [
             {
-                type: Schema.Types.ObjectId,
+                type: mongoose.Schema.Types.ObjectId,
                 ref: "Comment",
             },
         ]

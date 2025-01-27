@@ -8,12 +8,12 @@ import { Editorial } from "@/model/Editorial";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import CodeEditor from "./CodeEditor"; 
+import CodeEditor from "./CodeEditor";
 import CommentSection from "./CommentSection";
 import { useUser } from "@clerk/nextjs";
 import EditorialNavigator from "./EditorialNavigator";
 import MoreFromAuthor from "./MoreFromAuthor";
-import { BreadCrumbComponent } from "./BreadCrumbComponent"; 
+import { BreadCrumbComponent } from "./BreadCrumbComponent";
 import TextRenderer from "./TextRenderer";
 import { FaLink } from "react-icons/fa";
 
@@ -100,8 +100,6 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
 
             if (response.data.success) {
                 setEditorial(response.data.editorial);
-                console.log(response.data.editorial);
-
                 const author_id = response.data.editorial.author;
                 fetchAuthorName(author_id);
             } else {
@@ -127,7 +125,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
         }
 
         try {
-            const response = await axios.post("/api/editorials/comment",
+            const response = await axios.post("/api/comment",
                 {
                     editorialId: editorialid,
                     commenterId: clerkId,
@@ -162,7 +160,6 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
     }
 
     return (
-
         <div className="md:grid md:grid-cols-5 h-screen relative bg-slate-800 text-white">
 
             <Card className="col-span-4 md:py-4 mx-0 md:px-6 flex-1 overflow-y-auto scrollbar-hide bg-inherit
@@ -210,10 +207,10 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                                             rel="noopener noreferrer"
                                             className="text-blue-400 hover:underline"
                                         >
-                                            <FaLink className=" text-lg my-1"/>
+                                            <FaLink className=" text-lg my-1" />
                                         </Link>
                                     )}
-                                </div> 
+                                </div>
 
                                 <div className="mt-4">
                                     <h3 className="text-lg font-medium text-gray-300">
@@ -258,7 +255,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                 isCommentSectionOpen && <CommentSection
                     isCommentSectionOpen={isCommentSectionOpen}
                     updateCommentState={handleCommentSection}
-                    commentsIds={editorial.comments}
+                    editorialId={editorialid}
                     handleComment={handleCommentOnEditorial}
                 />
             }
@@ -268,7 +265,6 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                     editorial={editorial}
                     onNavigate={handleNavigate} />
             }
-
 
         </div>
 

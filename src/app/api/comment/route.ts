@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/dbConnect";
 import CommentModel from "@/model/Comment";
 import EditorialModel from "@/model/Editorial";
-import UserModel from "@/model/User"; 
+import UserModel from "@/model/User";
 
 export async function GET(request: Request) {
     await dbConnect();
@@ -106,6 +106,50 @@ export async function POST(request: Request) {
                 comment: newComment,
             }),
             { status: 500 }
+        );
+
+    } catch (error) {
+        console.error("Error adding comment:", error);
+        return new Response(
+            JSON.stringify({ success: false, message: "Error adding comment." }),
+            { status: 500 }
+        );
+    }
+}
+
+// to like a comment
+export async function PUT(request: Request) {
+    await dbConnect();
+
+    try {
+        const { commentId } = await request.json();
+  
+        if (!commentId) {
+            return new Response(
+                JSON.stringify({ success: false, message: "Missing comment id." }),
+                { status: 400 }
+            );
+        }
+
+        const comment = await CommentModel.findById(commentId);
+
+        if (!comment) {
+            return new Response(
+                JSON.stringify({ success: false, message: "Comment not found." }),
+                { status: 404 }
+            );
+        }
+
+        comment.likes += 1;
+
+        await comment.save();
+
+        return new Response(
+            JSON.stringify({
+                success: true,
+                message: "Comment added successfully."
+            }),
+            { status: 201 }
         );
 
     } catch (error) {

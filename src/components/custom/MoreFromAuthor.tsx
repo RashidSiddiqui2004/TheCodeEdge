@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Author } from './EditorialHeader'
 import { Editorial } from '@/model/Editorial';
 import axios from 'axios';
-import { ObjectId, Types } from 'mongoose';
+import { ObjectId, Schema } from 'mongoose';
 import EditorialCard from './EditorialCard';
 import Link from 'next/link';
 import generateSlug from '@/lib/generateSlug';
@@ -17,7 +17,7 @@ import { Button } from '../ui/button';
 
 interface MoreFromAuthorProps {
     author: Author | undefined;
-    authorId: Types.ObjectId;
+    authorId: Schema.Types.ObjectId;
     currentEditorialId: string;
 }
 
@@ -37,8 +37,8 @@ const MoreFromAuthor: React.FC<MoreFromAuthorProps> = ({ author, authorId, curre
                 // Filter out the currentEditorialId and select at most 4 recent editorials 
                 const filteredEditorials = allRecentEditorials
                     .filter((editorial: Editorial) => editorial._id !== currentEditorialId)
-                    .slice(0, 4); 
-                
+                    .slice(0, 4);
+
                 setRecentEditorials(filteredEditorials);
             } else {
                 console.error("Failed to fetch recent editorials:", response.data.message);
@@ -46,7 +46,7 @@ const MoreFromAuthor: React.FC<MoreFromAuthorProps> = ({ author, authorId, curre
         } catch (error) {
             console.error("Error fetching recent editorials:", error);
         }
-    }; 
+    };
 
     useEffect(() => {
         fetchRecentEditorials();
@@ -77,7 +77,7 @@ const MoreFromAuthor: React.FC<MoreFromAuthorProps> = ({ author, authorId, curre
                 })}
             </div>
 
-            <Button className='p-6 bg-white text-black rounded-full text-sm font-extralight 
+            <Button className='p-6 bg-white text-black hover:bg-slate-200 hover:text-slate-800 rounded-full text-sm font-extralight 
                 font-fell my-8'>See all from {author?.authorName}</Button>
 
         </div>

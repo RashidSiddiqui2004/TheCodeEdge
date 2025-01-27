@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose, { Schema, Document, Types, ObjectId } from "mongoose";
 import { enumsTheCodeEdge } from "@/enums/EnumsTheCodeEdge";
 
 const { ContestPlatforms, ProgrammingLanguages, QuestionDifficulty } = enumsTheCodeEdge;
@@ -37,7 +37,7 @@ export const ProblemSchema: Schema = new Schema({
 
 export interface Editorial extends Document {
     title: string;
-    author: Types.ObjectId;
+    author: ObjectId;
     contestPlatform: keyof typeof ContestPlatforms;
     contestName?: string; // optional if some platform is not supported by APIs
     languageUsed: keyof typeof ProgrammingLanguages;
@@ -53,9 +53,9 @@ export interface Editorial extends Document {
     outro?: string;
     tags?: string[];
     likes: number;
-    comments: Types.ObjectId[];
+    comments: ObjectId[];
     isApproved: boolean;
-    approvedBy?: Types.ObjectId;
+    approvedBy?: ObjectId;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -70,7 +70,7 @@ const EditorialSchema: Schema<Editorial> = new Schema(
             maxlength: [200, "Title cannot exceed 200 characters"],
         },
         author: {
-            type: Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: [true, "Author is required"],
         },
@@ -121,8 +121,8 @@ const EditorialSchema: Schema<Editorial> = new Schema(
         },
         comments: [
             {
-                type: Schema.Types.ObjectId,
-                ref: "Message",
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Comment",
             },
         ],
         isApproved: {
@@ -130,7 +130,7 @@ const EditorialSchema: Schema<Editorial> = new Schema(
             default: false,
         },
         approvedBy: {
-            type: Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: "User",
         },
     },

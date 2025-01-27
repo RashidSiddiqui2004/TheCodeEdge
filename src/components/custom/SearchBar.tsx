@@ -14,6 +14,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ keyword, updateKeyword }) => {
                 placeholder="Search Editorials by keywords..."
                 value={keyword}
                 onChange={(e) => updateKeyword(e.target.value)}
+                className="border-slate-700 shadow-lg shadow-gray-900"
             />
         </div>
     )

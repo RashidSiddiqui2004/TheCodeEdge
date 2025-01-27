@@ -284,8 +284,7 @@ const Page = () => {
                                         <Link href={`/editorial/${generateSlug(editorial.title, (editorial._id as ObjectId).toString())}`}>
                                             <EditorialCard editorial={editorial} />
                                         </Link>
-                                    </div>
-
+                                    </div> 
                                 )
                             })}
                         </div>

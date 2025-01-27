@@ -17,6 +17,8 @@ import { editorialSchema } from "@/schemas/editorialSchema";
 import { contestProblemLinks } from "@/constants";
 import { ContestPlatforms } from "@/enums/ContestPlatforms";
 import TextDisplay from "@/components/ui/TextDisplay";
+import generateSlug from "@/lib/generateSlug";
+import { ObjectId } from "mongoose";
 
 interface ContestData {
     contestCode: string;
@@ -134,7 +136,7 @@ const Page = () => {
 
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async () => { 
         setIsSubmitting(true)
         try {
             setErrors({})
@@ -150,9 +152,9 @@ const Page = () => {
                 introduction,
                 outro
             };
-
+ 
             const validatedEditorial = editorialSchema.parse(payload);
-
+  
             const response = await axios.post("/api/editorials", validatedEditorial);
 
             if (response.data.success) {
@@ -160,10 +162,12 @@ const Page = () => {
                     title: "Editorial Submitted",
                     description: "Your editorial has been successfully submitted for review.",
                 })
-                // title-editorialId
+
                 const editorialId = response.data.editorialId;
 
-                router.push(`/editorial/${editorialId}`);
+                const redirectEditorialUrl = `/editorial/${generateSlug(payload.title, editorialId)}`;
+
+                router.push(redirectEditorialUrl);
             } else {
                 throw new Error(response.data.message || "Submission failed")
             }
@@ -328,7 +332,7 @@ const Page = () => {
 
                         {/* introduction */}
                         <div className="space-y-2  gap-2 justify-center items-center text-3xl">
-                            <Label htmlFor="title" className="text-2xl text-gray-400">Contest Experience</Label> 
+                            <Label htmlFor="title" className="text-2xl text-gray-400">Contest Experience</Label>
                             <textarea
                                 id="introduction"
                                 value={introduction}
