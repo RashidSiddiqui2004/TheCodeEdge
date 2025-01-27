@@ -254,6 +254,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
             {
                 isCommentSectionOpen && <CommentSection
                     isCommentSectionOpen={isCommentSectionOpen}
+                    commentsIds={editorial.comments}
                     updateCommentState={handleCommentSection}
                     editorialId={editorialid}
                     handleComment={handleCommentOnEditorial}

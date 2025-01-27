@@ -23,7 +23,7 @@ export async function GET(request: Request) {
                 JSON.stringify({
                     success: true,
                     contestData,
-                    message: "Latest contests data fetched successfully.",
+                    message: "Latest contest data fetched successfully.",
                 }),
                 { status: 200, headers: { "Content-Type": "application/json" } }
             );

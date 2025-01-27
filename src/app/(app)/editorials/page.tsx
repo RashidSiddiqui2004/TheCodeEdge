@@ -13,15 +13,13 @@ import { Editorial } from "@/model/Editorial"
 import axios from "axios"
 import { useToast } from "@/hooks/use-toast"
 import generateSlug from "@/lib/generateSlug"
-import { ObjectId } from "mongoose"
-import { User } from "@/model/User"
+import { ObjectId } from "mongoose" 
 
 const Page = () => {
 
     const { toast } = useToast();
 
-    const contestPlatforms: string[] = [ContestPlatforms.CodeChef, ContestPlatforms.Codeforces, ContestPlatforms.LeetCode,
-    ContestPlatforms.HackerRank];
+    const contestPlatforms: string[] = [ContestPlatforms.CodeChef, ContestPlatforms.Codeforces, ContestPlatforms.LeetCode];
 
     const difficulties: string[] = [QuestionDifficulty.Easy, QuestionDifficulty.Medium, QuestionDifficulty.Hard, QuestionDifficulty.Expert];
 
@@ -30,7 +28,6 @@ const Page = () => {
     const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([])
 
     const [editorials, setEditorials] = useState<Editorial[]>([]);
-    const [editorialAuthorMap, seteditorialAuthorMap] = useState<Record<string, User>>();
 
     const filteredEditorials = useMemo(() => {
 
@@ -50,12 +47,10 @@ const Page = () => {
 
             if (response.data.success) {
                 const fetchedEditorials = response.data.editorials;
-                const fecthededitorialAuthormap = response.data.editorialAuthorMap;
+                // const fecthededitorialAuthormap = response.data.editorialAuthorMap; 
 
                 setEditorials(fetchedEditorials);
-                seteditorialAuthorMap(fecthededitorialAuthormap);
-
-                console.log(fetchedEditorials);
+                // seteditorialAuthorMap(fecthededitorialAuthormap); 
             }
 
         } catch (error) {
@@ -68,7 +63,7 @@ const Page = () => {
     }
 
     // executes only on first render
-    useEffect(() => { 
+    useEffect(() => {
         fetchEditorials();
     }, [])
 
@@ -132,7 +127,7 @@ const Page = () => {
                         {filteredEditorials.map((editorial, index) => (
                             <div key={index}>
                                 <Link href={`/editorial/${generateSlug(editorial.title, (editorial._id as ObjectId).toString())}`}>
-                                    <EditorialCard editorial={editorial} descriptionLimit={220} editorialAuthorMap={editorialAuthorMap} />
+                                    <EditorialCard editorial={editorial} descriptionLimit={220} />
                                 </Link>
                             </div>
                         ))}

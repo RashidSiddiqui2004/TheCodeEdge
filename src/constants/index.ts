@@ -6,7 +6,7 @@ export const CURRENCY_NAME = "AlgoGems";
 
 export const contestProblemLinks = {
     [ContestPlatforms.CodeChef]: "codechef.com",
-    [ContestPlatforms.Codeforces]: "codeforces.com/problems",
-    [ContestPlatforms.LeetCode]: "leetcode.com/problems",
-    [ContestPlatforms.HackerRank]: "hackerrank/problems",
+    [ContestPlatforms.Codeforces]: "codeforces.com",
+    [ContestPlatforms.LeetCode]: "leetcode.com/problems/",
+    // [ContestPlatforms.HackerRank]: "hackerrank/problems",
 }

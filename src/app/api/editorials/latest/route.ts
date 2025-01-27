@@ -8,25 +8,22 @@ export async function GET() {
 
         // Fetch the latest 20 editorials and populate the author details
         const editorials = await EditorialModel.find({})
-            .populate("author")
+            // .populate("author")
             .sort({ createdAt: -1 })
             .limit(20)
             .exec();
 
-        const editorialAuthorMap = editorials.reduce((map, editorial) => {
-            if (editorial.author) {
-                map[editorial._id as string] = editorial.author;
-            }
-            return map;
-        }, {} as Record<string, User>);
+        // const editorialAuthorMap = editorials.reduce((map, editorial) => {
+        //     if (editorial.author) {
+        //         map[editorial._id as string] = editorial.author;
+        //     }
+        //     return map;
+        // }, {} as Record<string, User>);
 
-        console.log(editorials);
-         
         return new Response(
             JSON.stringify({
                 success: true,
                 editorials,
-                editorialAuthorMap,
                 message: "Fetched the latest 20 editorials successfully.",
             }),
             { status: 200 }

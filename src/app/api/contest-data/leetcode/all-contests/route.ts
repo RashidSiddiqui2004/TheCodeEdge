@@ -3,15 +3,16 @@ import axios from "axios";
 export async function GET() {
     try {
 
-        const response = await axios.get("https://www.codechef.com/api/list/contests/all?sort_by=START&sorting_order=asc&offset=0&mode=all");
+        const response = await axios.get("https://alfa-leetcode-api.onrender.com/shobhit_yadav/contest/history");
+        const contestData = response.data.contestHistory;
 
-        const contestData = response.data.past_contests;
+        const latestContests = contestData.reverse();
 
         if (contestData) {
             return new Response(
                 JSON.stringify({
                     success: true,
-                    contestData,
+                    contestData: latestContests,
                     message: "Latest contests data fetched successfully.",
                 }),
                 { status: 200, headers: { "Content-Type": "application/json" } }

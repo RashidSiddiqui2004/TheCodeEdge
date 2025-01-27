@@ -70,6 +70,7 @@ export default function Page({
             if (response.data.success) {
                 const fetchedUser: User = response.data.user;
                 setUserData(fetchedUser);
+                fetchEditorials(fetchedUser._id as string);
             } else {
                 toast({
                     title: "Error",
@@ -84,22 +85,22 @@ export default function Page({
         }
     };
 
-    const fetchEditorials = async () => {
+    const fetchEditorials = async (userid: string) => {
         try {
-            if (userData) {
-                const response = await axios.get("/api/editorials", {
-                    params: { objectId: userData._id },
-                });
 
-                if (response.data.success) {
-                    setEditorials(response.data.userEditorials);
-                } else {
-                    toast({
-                        title: "Error fetching editorials",
-                        description: response.data.message || "Failed to fetch editorials.",
-                    });
-                }
+            const response = await axios.get("/api/editorials/userid", {
+                params: { objectId: userid },
+            });
+
+            if (response.data.success) {
+                setEditorials(response.data.userEditorials);
+            } else {
+                toast({
+                    title: "Error fetching editorials",
+                    description: response.data.message || "Failed to fetch editorials.",
+                });
             }
+
         } catch (error) {
             console.error("Error fetching editorials:", error);
             toast({
@@ -112,34 +113,31 @@ export default function Page({
 
     useEffect(() => {
         fetchUserData();
-        fetchEditorials();
     }, []);
 
     return (
         <div className="py-8 flex justify-center items-center bg-slate-950 text-fell">
 
-            <Card className="mx-auto bg-inherit text-white">
+            <Card className="mx-auto bg-inherit text-white p-4">
                 <CardContent>
                     <div className="space-y-4">
 
-                        <div>
-                            <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-4">
+                            {
+                                userData?.imageUrl &&
+                                <img
+                                    id="profileImage"
+                                    src={userData?.imageUrl}
+                                    alt="Profile"
+                                    width={10}
+                                    height={10}
+                                    className="w-12 h-12 rounded-full border"
+                                />
+                            }
 
-                                {
-                                    userData?.imageUrl &&
-                                    <Image
-                                        id="profileImage"
-                                        src={userData?.imageUrl}
-                                        alt="Profile"
-                                        width={10}
-                                        height={10}
-                                        className="w-12 h-12 rounded-full border"
-                                    />
-                                }
-
-                                <span>{userData?.username || "N/A"}</span>
-                            </div>
+                            <span>{userData?.username || "N/A"}</span>
                         </div>
+
                         <div>
                             <Label htmlFor="email">E-Mail</Label>
                             <TextDisplay id="email" value={userData?.email || "N/A"} isLink={false} />

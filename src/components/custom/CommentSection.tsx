@@ -15,11 +15,12 @@ import { IoIosClose } from "react-icons/io";
 interface EditorialSideHeroProps {
     isCommentSectionOpen: boolean;
     updateCommentState: () => void;
-    editorialId: string;
+    editorialId?: string;
+    commentsIds: Schema.Types.ObjectId[];
     handleComment: (commentContent: string) => Promise<boolean>;
 }
 
-const CommentSection: React.FC<EditorialSideHeroProps> = ({ editorialId, handleComment, isCommentSectionOpen, updateCommentState }) => {
+const CommentSection: React.FC<EditorialSideHeroProps> = ({ editorialId, commentsIds, handleComment, isCommentSectionOpen, updateCommentState }) => {
 
     const { user } = useUser();
     const { toast } = useToast();
@@ -27,7 +28,7 @@ const CommentSection: React.FC<EditorialSideHeroProps> = ({ editorialId, handleC
     const [newComment, setNewComment] = useState("");
     const [submittingComment, setsubmittingComment] = useState<boolean>(false);
 
-    const fetchComments = useCallback(
+    const fetchCommentsPopulated = useCallback(
         async (editorialId: string) => {
             try {
                 const response = await axios.get("/api/editorials/id/comments", {
@@ -51,6 +52,26 @@ const CommentSection: React.FC<EditorialSideHeroProps> = ({ editorialId, handleC
         [editorialId]
     );
 
+    const fetchComments = async (commentsIds: Schema.Types.ObjectId[]) => {
+        try {
+            const fetchedComments = await Promise.all(
+                commentsIds.map(async (commentId) => {
+                    const response = await axios.get(`/api/comment?commentId=${commentId}`);
+                    if (response.data.success) {
+                        return response.data.comment;
+                    } else {
+                        console.error("Failed 😔 to fetch comments:", response.data.message);
+                        return null;
+                    }
+                })
+            );
+
+            setComments(fetchedComments.filter((comment: Comment) => comment !== null));
+        } catch (error) {
+            console.error("Error 😔 fetching comments:", error);
+        }
+    };
+
     const handleNewComment = async () => {
         if (!newComment.trim()) return;
 
@@ -62,9 +83,9 @@ const CommentSection: React.FC<EditorialSideHeroProps> = ({ editorialId, handleC
             if (isCommented) {
                 setNewComment("");
                 toast({
-                    title: "Comment added"
+                    title: "Comment added ❤️"
                 });
-                fetchComments(editorialId);
+                fetchComments(commentsIds);
             }
             else {
                 toast({
@@ -81,8 +102,8 @@ const CommentSection: React.FC<EditorialSideHeroProps> = ({ editorialId, handleC
     };
 
     useEffect(() => {
-        fetchComments(editorialId);
-    }, [editorialId]);
+        fetchComments(commentsIds);
+    }, [commentsIds]);
 
     return (
         <div

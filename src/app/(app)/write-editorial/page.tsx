@@ -19,6 +19,7 @@ import { ContestPlatforms } from "@/enums/ContestPlatforms";
 import TextDisplay from "@/components/ui/TextDisplay";
 import generateSlug from "@/lib/generateSlug";
 import { ObjectId } from "mongoose";
+import getLeetcodeContestCode from "@/lib/getLeetcodeContestCode";
 
 interface ContestData {
     contestCode: string;
@@ -73,32 +74,77 @@ const Page = () => {
             if (response.data.success) {
                 const contestsFetched = response.data.contestData;
 
-                const contestNames = contestsFetched.map((contest: any) => ({
-                    contestCode: contest.contest_code,
-                    contestName: contest.contest_name
-                }));
-                setListOfContests(contestNames);
+                if (contestPlatform === ContestPlatforms.CodeChef) {
+                    const contestNames = contestsFetched.map((contest: any) => ({
+                        contestCode: contest.contest_code,
+                        contestName: contest.contest_name
+                    }));
+                    setListOfContests(contestNames);
+                }
+                else if (contestPlatform === ContestPlatforms.LeetCode) {
 
+                    const contestNames = contestsFetched.map((contestBody: any) => ({
+                        contestCode: getLeetcodeContestCode(contestBody.contest.title),
+                        contestName: contestBody.contest.title
+                    }));
+                    setListOfContests(contestNames);
+                }
+
+                else if (contestPlatform === ContestPlatforms.Codeforces) {
+                    const contestNames = contestsFetched.map((contestBody: any) => ({
+                        contestCode: contestBody?.id || "Unknown",
+                        contestName: contestBody?.name?.toString() || "Unnamed Contest",
+                    }));
+                    setListOfContests(contestNames);
+                }
             }
         } catch (error) {
+            console.log(error);
             setListOfContests([]);
         }
     };
 
     const fetchContestProblemsData = async () => {
         try {
+
             const response = await axios.get(`/api/contest-data/${contestPlatform.toLowerCase()}/contest`,
                 { params: { contestID: selectedContest } });
 
             if (response.data.success) {
-                const problemsFetched = response.data.contestData.problems;
 
-                const problemsData: ProblemData[] = Object.entries(problemsFetched).map(([key, problem]: [string, any]) => ({
-                    problemName: problem.name,
-                    problemUrl: problem.problem_url
-                }));
+                if (contestPlatform === ContestPlatforms.CodeChef) {
+                    const problemsFetched = response.data.contestData.problems;
 
-                setListOfProblems(problemsData);
+                    const problemsData: ProblemData[] = Object.entries(problemsFetched).map(([_, problem]: [string, any]) => ({
+                        problemName: problem.name,
+                        problemUrl: problem.problem_url
+                    }));
+
+                    setListOfProblems(problemsData);
+                }
+
+                else if (contestPlatform === ContestPlatforms.Codeforces) {
+                    const problemsFetched = response.data.contestData.problems;
+
+                    const problemsData: ProblemData[] = Object.entries(problemsFetched).map(([_, problem]: [string, any]) => ({
+                        problemName: problem.name,
+                        problemUrl: problem.index,
+                    }));
+
+                    setListOfProblems(problemsData);
+                }
+                // else if (contestPlatform === ContestPlatforms.LeetCode) {
+                //     const problemsFetched = response.data.contestData.questions;
+
+                //     const problemsData: ProblemData[] = problemsFetched.map(
+                //         ([_, problem]: [string, { title: string; title_slug: string }]) => ({
+                //             problemName: problem.title,
+                //             problemUrl: problem.title_slug,
+                //         })
+                //     );
+
+                //     setListOfProblems(problemsData);
+                // }
             }
         } catch (error) {
             setListOfProblems([]);
@@ -118,15 +164,20 @@ const Page = () => {
 
     const handleProblemChange = (index: number, key: keyof ProblemInput, value: any) => {
         if (key == "problemName") {
-            setProblemInputs((prev) =>
-                prev.map((item, i) => (i === index ? { ...item, problemName: value } : item))
-            );
 
-            const problemUrl = "https://" + contestProblemLinks[contestPlatform as ContestPlatforms] + listOfProblems.find((problem) => problem.problemName === value)?.problemUrl;
+            if (contestPlatform === ContestPlatforms.Codeforces) {
+                const problemUrl = "https://" + contestProblemLinks[contestPlatform as ContestPlatforms] + `/contest/${selectedContest}/problem/` + listOfProblems.find((problem) => problem.problemName === value)?.problemUrl;
+                setProblemInputs((prev) =>
+                    prev.map((item, i) => (i === index ? { ...item, link: problemUrl, problemName: value } : item))
+                );
+            }
+            else {
+                const problemUrl = "https://" + contestProblemLinks[contestPlatform as ContestPlatforms] + listOfProblems.find((problem) => problem.problemName === value)?.problemUrl;
 
-            setProblemInputs((prev) =>
-                prev.map((item, i) => (i === index ? { ...item, link: problemUrl } : item))
-            );
+                setProblemInputs((prev) =>
+                    prev.map((item, i) => (i === index ? { ...item, link: problemUrl, problemName: value } : item))
+                );
+            }
 
         } else {
             setProblemInputs((prev) =>
@@ -136,8 +187,9 @@ const Page = () => {
 
     };
 
-    const handleSubmit = async () => { 
+    const handleSubmit = async () => {
         setIsSubmitting(true)
+
         try {
             setErrors({})
 
@@ -154,7 +206,7 @@ const Page = () => {
             };
  
             const validatedEditorial = editorialSchema.parse(payload);
-  
+ 
             const response = await axios.post("/api/editorials", validatedEditorial);
 
             if (response.data.success) {
@@ -286,7 +338,7 @@ const Page = () => {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {listOfContests.map((contest) => (
-                                        <SelectItem key={contest.contestCode} value={contest.contestCode}>
+                                        <SelectItem key={contest.contestCode} value={contest.contestCode.toString()}>
                                             {contest.contestName}
                                         </SelectItem>
                                     ))}
@@ -409,14 +461,15 @@ const Page = () => {
                                 {/* Remove Problem Button */}
                                 <button
                                     onClick={() => handleRemoveProblem(index)}
-                                    className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                                    className="mt-2 bg-red-500 hover:bg-red-700 w-fit rounded-full
+                                     text-white font-bold py-2 px-6"
                                 >
                                     Remove Problem
                                 </button>
                             </div>
                         ))}
 
-                        <Button onClick={handleAddProblem}>Add a Problem</Button>
+                        <Button onClick={handleAddProblem}>Add {problemInputs.length === 0 ? "a" : "another"} Problem</Button>
 
                         {/* outro */}
                         <div className="space-y-2 gap-2 justify-center items-center text-3xl">
@@ -443,7 +496,7 @@ const Page = () => {
 
 
                         {/* tags input */}
-                        <div className="mt-4">
+                        {/* <div className="mt-4">
                             <h2 className='text-white flex justify-start text-xl mb-4 font-semibold ml-3'>Tags</h2>
 
                             <div className="flex flex-wrap gap-2 mb-4">
@@ -470,7 +523,7 @@ const Page = () => {
                                 placeholder="Type and press Enter to add tags"
                                 className=' bg-inherit mb-4 px-2 py-2 w-full rounded-lg inputbox text-white placeholder:text-gray-200 outline-none'
                             />
-                        </div>
+                        </div> */}
 
                     </div>
                 </CardContent>

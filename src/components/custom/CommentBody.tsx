@@ -17,28 +17,26 @@ interface CommentProps {
 const CommentBody: React.FC<CommentProps> = ({ initialComment }) => {
 
     const { toast } = useToast();
-    const [comment, setComment] = useState<Comment>(initialComment);
     const [author, setAuthor] = useState<Author>();
 
     const likeComment = async () => {
         try {
             const response = await axios.put("/api/comment", {
-                commentId: comment._id,
+                commentId: initialComment._id,
             });
 
             if (response.data.success) {
-                setComment(prevComment => ({
-                    ...prevComment.toObject(),
-                    likes: prevComment.likes + 1,
-                }));
+                toast({
+                    title: "Liked ❤️ the comment"
+                });
             } else {
                 toast({
-                    title: "Failed to like the comment"
+                    title: "Failed 😔 to like the comment"
                 });
             }
 
         } catch (error) {
-            console.error("Error fetching comments:", error);
+            console.error("Error 😔 fetching comment:", error);
         }
     }
 
@@ -46,7 +44,7 @@ const CommentBody: React.FC<CommentProps> = ({ initialComment }) => {
         const fetchAuthorName = async () => {
             try {
                 const response = await axios.get("/api/user", {
-                    params: { userId: comment.author },
+                    params: { userId: initialComment.author },
                 });
 
                 if (response.data.success) {
@@ -71,17 +69,17 @@ const CommentBody: React.FC<CommentProps> = ({ initialComment }) => {
                         <div className="flex flex-col justify-start items-start">
                             <h4 className="font-normal">{author?.authorName}</h4>
                             <span className="text-xs">
-                                {formatDistanceToNow(comment.createdAt, { addSuffix: true })}
+                                {formatDistanceToNow(initialComment.createdAt, { addSuffix: true })}
                             </span>
                         </div>
                     </div>
                 </div>
-                <p className="mt-2 italic">{comment.content}</p>
+                <p className="mt-2 italic">{initialComment.content}</p>
             </CardContent>
             <CardFooter className="flex justify-between p-0 mx-3 mb-1">
                 <Button variant="ghost" size="sm" className='cursor-pointer' onClick={likeComment}>
                     <PiHandsClapping className="h-4 w-4" />
-                    {comment.likes} Likes
+                    {initialComment.likes} Likes
                 </Button>
             </CardFooter>
         </Card>

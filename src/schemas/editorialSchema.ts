@@ -1,5 +1,4 @@
-import { z } from "zod"
-import { Types } from "mongoose"
+import { z } from "zod";
 import { enumsTheCodeEdge } from "@/enums/EnumsTheCodeEdge"
 
 const { ContestPlatforms, ProgrammingLanguages, QuestionDifficulty } = enumsTheCodeEdge
@@ -20,8 +19,7 @@ export const editorialSchema = z.object({
         .trim(),
     introduction: z.string().max(5000, "Introduction cannot exceed 5000 characters"),
     clerkUserId: z.string(),
-    contestPlatform: z.enum([ContestPlatforms.CodeChef, ContestPlatforms.Codeforces,
-    ContestPlatforms.HackerRank, ContestPlatforms.LeetCode,
+    contestPlatform: z.enum([ContestPlatforms.CodeChef, ContestPlatforms.Codeforces, ContestPlatforms.LeetCode,
     ]),
     contestName: z.string().min(4, "Contest name should be atleast 4 characters long."),
     languageUsed: z.enum([ProgrammingLanguages.C, ProgrammingLanguages.Cpp, ProgrammingLanguages.Java, ProgrammingLanguages.Python,

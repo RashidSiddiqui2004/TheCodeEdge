@@ -24,9 +24,7 @@ export async function GET(request: Request) {
         }
 
         const editorial = await EditorialModel.findById(editorialId);
-
-        console.log(editorial); 
-
+  
         if (!editorial) {
             return new Response(
                 JSON.stringify({ success: false, message: "Editorial not found." }),
