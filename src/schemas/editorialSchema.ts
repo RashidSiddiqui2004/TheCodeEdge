@@ -6,7 +6,7 @@ const { ContestPlatforms, ProgrammingLanguages, QuestionDifficulty } = enumsTheC
 
 const ProblemSchema = z.object({
     problemName: z.string().min(1, "Problem title is required").trim(),
-    approach: z.string().trim(),
+    approach: z.string().trim().min(10, "Proper question approach is required"),
     difficulty: z.enum([QuestionDifficulty.Easy, QuestionDifficulty.Medium, QuestionDifficulty.Hard, QuestionDifficulty.Expert]),
     link: z.string().url(),
     code: z.string(),

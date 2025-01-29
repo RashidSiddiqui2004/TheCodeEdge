@@ -32,6 +32,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.0.6",
     "input-otp": "^1.4.2",
     "jodit": "^4.2.50",
     "jodit-react": "^5.0.10",

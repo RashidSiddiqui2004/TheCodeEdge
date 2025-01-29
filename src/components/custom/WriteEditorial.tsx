@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { MonacoCodeEditorComponent } from "@/components/custom/MonacoCodeEditorComponent";
 import Navbar from "@/components/custom/Navbar";
 import axios from "axios";
-import { useUser, SignInButton } from "@clerk/nextjs"; 
+import { useUser, SignInButton } from "@clerk/nextjs";
 import { enumsTheCodeEdge } from "@/enums/EnumsTheCodeEdge";
 import { editorialSchema } from "@/schemas/editorialSchema";
 import { contestProblemLinks, EDITORIAL_LIMITS } from "@/constants";
@@ -21,7 +21,8 @@ import { Badge } from "../ui/badge";
 import { GiCancel } from "react-icons/gi";
 import { ContestData, ProblemData, ProblemInput } from "@/types";
 import EditorialValidation from "./EditorialValidation";
- 
+import { Info } from "lucide-react";
+
 const WriteEditorial = () => {
 
     const { user } = useUser();
@@ -174,6 +175,25 @@ const WriteEditorial = () => {
 
     };
 
+
+    const handleInputChange = (e: any) => {
+        const newTag = e.target.value;
+        setCurrentTag(newTag);
+    };
+
+    const handleInputKeyDown = (e: any) => {
+        if (e.key === 'Enter' && currentTag.trim() !== '') {
+            setTags([...tags, currentTag.trim()]);
+            setCurrentTag('');
+        }
+    };
+
+    const handleTagRemove = (index: number) => {
+        const updatedTags = [...tags];
+        updatedTags.splice(index, 1);
+        setTags(updatedTags);
+    };
+
     const handleSubmit = async () => {
         setIsSubmitting(true)
 
@@ -223,24 +243,6 @@ const WriteEditorial = () => {
         }
     }
 
-    const handleInputChange = (e: any) => {
-        const newTag = e.target.value;
-        setCurrentTag(newTag);
-    };
-
-    const handleInputKeyDown = (e: any) => {
-        if (e.key === 'Enter' && currentTag.trim() !== '') {
-            setTags([...tags, currentTag.trim()]);
-            setCurrentTag('');
-        }
-    };
-
-    const handleTagRemove = (index: number) => {
-        const updatedTags = [...tags];
-        updatedTags.splice(index, 1);
-        setTags(updatedTags);
-    };
-
     const titleRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
@@ -270,12 +272,21 @@ const WriteEditorial = () => {
                 <CardContent>
                     <div className="space-y-6 relative">
 
-                        <div>
-                            <EditorialValidation/>
-                        </div>
+                        {
+                            !showSchema ?
+                                <button
+                                    onClick={() => setShowSchema(!showSchema)}
+                                    className="absolute top-0 right-2 p-2 rounded-full
+                                     bg-gray-800 text-white shadow-md hover:bg-gray-700 transition"
+                                >
+                                    <Info size={24} />
+                                </button>
+                                :
+                                <EditorialValidation handleUpdateShowSchema={setShowSchema} />
+                        }
 
                         {/* editorial title */}
-                        <div className="space-y-2 flex gap-2 justify-center items-center text-3xl">
+                        <div className="space-y-2 flex gap-x-2 justify-center items-center text-3xl">
                             <Label htmlFor="title" className="text-2xl text-gray-400">Title</Label>
                             <span className="border-r-2 border-white w-1 h-10"></span>
                             <textarea
@@ -336,37 +347,41 @@ const WriteEditorial = () => {
                         </div>
 
                         {/* Overall Difficulty */}
-                        <Select value={overallDifficulty} onValueChange={setOverallDifficulty}>
-                            <Label className="text-xl mt-6">Overall Difficulty of the contest</Label>
+                        <div>
+                            <Select value={overallDifficulty} onValueChange={setOverallDifficulty}>
+                                <Label className="text-xl mt-6">Overall Difficulty of the contest</Label>
 
-                            <SelectTrigger>
-                                <SelectValue placeholder="Overall Difficulty" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {Object.values(QuestionDifficulty).map((difficulty) => (
-                                    <SelectItem key={difficulty} value={difficulty}>
-                                        {difficulty}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Overall Difficulty" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {Object.values(QuestionDifficulty).map((difficulty) => (
+                                        <SelectItem key={difficulty} value={difficulty}>
+                                            {difficulty}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
                         {/* programming language used */}
-                        <Select value={language} onValueChange={setLanguage}>
+                        <div>
+                            <Select value={language} onValueChange={setLanguage}>
 
-                            <Label className="text-xl mt">Language used in the contest</Label>
+                                <Label className="text-xl mt">Language used in the contest</Label>
 
-                            <SelectTrigger>
-                                <SelectValue placeholder="Language Used" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {Object.values(ProgrammingLanguages).map((language) => (
-                                    <SelectItem key={language} value={language}>
-                                        {language}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Language Used" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {Object.values(ProgrammingLanguages).map((language) => (
+                                        <SelectItem key={language} value={language}>
+                                            {language}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
                         {/* introduction */}
                         <div className="space-y-2 gap-2 justify-center items-center text-3xl">
@@ -444,7 +459,8 @@ const WriteEditorial = () => {
                                     }}
                                 />
 
-                                <Label htmlFor={`editorial-${index}-code`}>Code</Label>
+
+                                <Label htmlFor={`editorial-${index}-code`}>Code {"(Optional)"}</Label>
 
                                 <MonacoCodeEditorComponent
                                     value={problemInput.code || ""}
