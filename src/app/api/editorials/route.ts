@@ -2,6 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 import EditorialModel from "@/model/Editorial";
 import { NextResponse } from "next/server";
+import { REWARDS } from "@/constants";
 
 // To create an editorial
 export async function POST(request: Request) {
@@ -18,6 +19,7 @@ export async function POST(request: Request) {
             introduction,
             outro,
             problems,
+            tags
         } = await request.json();
 
         const user = await UserModel.findOne({ clerkUserId });
@@ -39,6 +41,7 @@ export async function POST(request: Request) {
             problems,
             introduction,
             outro,
+            tags,
             createdAt: new Date(),
             updatedAt: new Date(),
         });
@@ -46,6 +49,8 @@ export async function POST(request: Request) {
         const savedEditorial = await editorial.save();
 
         user.editorials.push(savedEditorial._id);
+        user.algoPoints += REWARDS.WRITE_EDITORIAL_POINTS; // increment algopoints for the author
+
         await user.save();
 
         return NextResponse.json(

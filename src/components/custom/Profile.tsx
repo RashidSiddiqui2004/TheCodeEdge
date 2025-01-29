@@ -59,7 +59,7 @@ const SocialIcon: React.FC<SocialIconProps> = ({ platform, url, handleSocialChan
     );
 };
 
-const Page = () => {
+const Profile = () => {
     const { user } = useUser();
 
     const [editorials, setEditorials] = useState<Editorial[]>([]);
@@ -142,59 +142,57 @@ const Page = () => {
             setIsSubmitting(false);
         }
     };
+ 
+    const fetchUserData = async () => {
+        try {
+            const response = await axios.get("/api/user/profile", { params: { clerkUserId: user.id } });
 
-    useEffect(() => {
-
-        const fetchUserData = async () => {
-            try {
-                const response = await axios.get("/api/user/profile", { params: { clerkUserId: user.id } });
-
-                if (response.data.success) {
-                    const fetchedUser: User = response.data.user;
-                    user.username = fetchedUser.username;
-                    setFormData((prev) => ({
-                        ...prev,
-                        bio: fetchedUser.bio,
-                        username: fetchedUser.username,
-                        userProfileImage: fetchedUser.imageUrl,
-                        socialLinks: { ...prev.socialLinks, ...fetchedUser.socialLinks },
-                    }));
-                }
-
-                return;
-
-            } catch (error) {
-                console.log("Error occured while fetching user data: ", error);
-
-                toast({
-                    title: "Error",
-                    description: "An unexpected error occurred."
-                });
+            if (response.data.success) {
+                const fetchedUser: User = response.data.user;
+                user.username = fetchedUser.username;
+                setFormData((prev) => ({
+                    ...prev,
+                    bio: fetchedUser.bio,
+                    username: fetchedUser.username,
+                    userProfileImage: fetchedUser.imageUrl,
+                    socialLinks: { ...prev.socialLinks, ...fetchedUser.socialLinks },
+                }));
             }
-        };
 
-        const fetchEditorials = async () => {
-            try {
-                const response = await axios.get("/api/editorials", { params: { userId: user?.id } });
+            return;
 
-                if (response.data.success) {
-                    const fetchedEditorials = response.data.userEditorials;
-                    setEditorials(fetchedEditorials);
-                }
+        } catch (error) {
+            console.log("Error occured while fetching user data: ", error);
 
-                return;
-
-            } catch (error) {
-
-                console.log("Error occured while fetching editorials: ", error);
-
-                toast({
-                    title: "Error fetching user editorials!",
-                    description: "An unexpected error occurred."
-                });
-            }
+            // toast({
+            //     title: "Error",
+            //     description: "An unexpected error occurred."
+            // });
         }
+    };
 
+    const fetchEditorials = async () => {
+        try {
+            const response = await axios.get("/api/editorials", { params: { userId: user?.id } });
+
+            if (response.data.success) {
+                const fetchedEditorials = response.data.userEditorials;
+                setEditorials(fetchedEditorials);
+            }
+
+            return;
+
+        } catch (error) { 
+            console.log("Error occured while fetching editorials: ", error); 
+            // toast({
+            //     title: "Error fetching user editorials!",
+            //     description: "An unexpected error occurred."
+            // });
+        }
+    }
+
+
+    useEffect(() => { 
         fetchUserData();
         fetchEditorials();
     }, [toast, user]);
@@ -284,7 +282,7 @@ const Page = () => {
                                         <Link href={`/editorial/${generateSlug(editorial.title, (editorial._id as ObjectId).toString())}`}>
                                             <EditorialCard editorial={editorial} />
                                         </Link>
-                                    </div> 
+                                    </div>
                                 )
                             })}
                         </div>
@@ -295,4 +293,4 @@ const Page = () => {
     );
 };
 
-export default Page;
+export default Profile;

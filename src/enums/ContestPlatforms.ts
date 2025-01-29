@@ -1,5 +1,5 @@
 export enum ContestPlatforms {
-    LeetCode = 'LeetCode',
+    // LeetCode = 'LeetCode',
     CodeChef = 'CodeChef',
     // HackerRank = 'HackerRank',
     // AtCoder = 'AtCoder',

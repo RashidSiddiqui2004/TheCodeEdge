@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react'
 import { Author } from './EditorialHeader'
 import { Editorial } from '@/model/Editorial';
@@ -58,6 +57,7 @@ const MoreFromAuthor: React.FC<MoreFromAuthorProps> = ({ author, authorId, curre
             <h3 className="mt-8 mb-6 scroll-m-20 text-xl font-semibold tracking-tight">
                 More Editorials by {author?.authorName}
             </h3>
+            
             {/* <Alert>
                 <PersonStanding className="h-4 w-4" />
                 <AlertTitle>Heads up!</AlertTitle>
@@ -65,7 +65,7 @@ const MoreFromAuthor: React.FC<MoreFromAuthorProps> = ({ author, authorId, curre
                 </AlertDescription>
             </Alert> */}
 
-            <div className='grid grid-cols-2 gap-3'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 gap-y-4'>
                 {recentEditorials?.map((editorial, index) => {
                     return (
                         <div key={index}>
@@ -78,7 +78,11 @@ const MoreFromAuthor: React.FC<MoreFromAuthorProps> = ({ author, authorId, curre
             </div>
 
             <Button className='p-6 bg-white text-black hover:bg-slate-200 hover:text-slate-800 rounded-full text-sm font-extralight 
-                font-fell my-8'>See all from {author?.authorName}</Button>
+                font-fell my-8'>
+                <Link href={`/user/${author?.authorName}`}>
+                    See all from {author?.authorName}
+                </Link>
+            </Button>
 
         </div>
     )

@@ -5,13 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Info } from "lucide-react"
-import LeaderboardUserCard from "./LeaderboardUserCard"
+import axios from "axios"
 
 export interface Contributor {
-    id: number
     username: string
     algopoints: number
-    rank: number
+    imageUrl: string
 }
 
 const TopContributors = () => {
@@ -20,18 +19,11 @@ const TopContributors = () => {
 
     useEffect(() => {
         const fetchTopContributors = async () => {
-            const mockData: Contributor[] = [
-                { id: 1, username: "Rashid", algopoints: 100, rank: 1 },
-                { id: 2, username: "John", algopoints: 90, rank: 2 },
-                { id: 3, username: "Alex", algopoints: 85, rank: 3 },
-                { id: 4, username: "Emma", algopoints: 80, rank: 4 },
-                { id: 5, username: "Sarah", algopoints: 75, rank: 5 },
-                { id: 6, username: "Michael", algopoints: 70, rank: 6 },
-            ]
-            setTopContributors(mockData)
+            const response = await axios.get('/api/leaderboard');
+            const top20Contributors: Contributor[] = response.data.topContributors;
+            setTopContributors(top20Contributors.slice(0, 5));
         }
-
-        fetchTopContributors()
+        fetchTopContributors();
     }, [])
 
     const handleViewMore = () => {
@@ -68,9 +60,9 @@ const TopContributors = () => {
                 <ul className="space-y-2">
                     {topContributors.slice(0, visibleContributors).map((contributor, index) => (
                         <li
-                            key={contributor.id}
+                            key={contributor.username}
                             className={`flex items-center justify-between p-3 
-                            rounded-lg ${getCardColor(contributor.rank)}`}
+                            rounded-lg ${getCardColor(index + 1)}`}
                         >
                             <div className="flex items-center gap-3">
                                 <span className="font-bold text-lg">{index + 1}</span>
@@ -96,8 +88,9 @@ const TopContributors = () => {
                     <ul className="list-disc list-inside mt-2 space-y-1">
                         {/* <li>Solving coding challenges: 1-5 points per challenge</li> */}
                         <li>Writing quality editorials: 10 points per approved editorial</li>
-                        <li>Upvotes on contributions: 1 point per upvote</li>
-                        <li>Helping others in discussions: 2 points per helpful comment</li>
+                        <li>Upvotes on editorials: 2 points per upvote</li>
+                        <li>Comments on editorials: 3 points per upvote</li>
+                        {/* <li>Helping others in discussions: 2 points per helpful comment</li> */}
                     </ul>
                     <p className="mt-2">
                         * The leaderboard is updated in real-time as users earn points. Rankings are recalculated daily at midnight

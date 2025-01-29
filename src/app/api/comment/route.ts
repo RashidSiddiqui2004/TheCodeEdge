@@ -1,3 +1,4 @@
+import { REWARDS } from "@/constants";
 import dbConnect from "@/lib/dbConnect";
 import CommentModel from "@/model/Comment";
 import EditorialModel from "@/model/Editorial";
@@ -71,7 +72,7 @@ export async function POST(request: Request) {
             return new Response(
                 JSON.stringify({
                     success: false,
-                    message: "User not found!",
+                    message: "You're not authenticated!",
                 }),
                 { status: 404 }
             );
@@ -87,7 +88,26 @@ export async function POST(request: Request) {
 
         if (newComment) {
             editorial.comments.push(newComment._id);
+
+            // save the editorial with new comment
             await editorial.save();
+
+            const authorId = editorial.author;
+
+            const author = await UserModel.findById(authorId);
+
+            if (!author) {
+                return new Response(
+                    JSON.stringify({ success: false, message: "Author not found." }),
+                    { status: 404 }
+                );
+            }
+
+            // Increment Algopoints of the author
+            author.algoPoints += REWARDS.COMMMENT_ON_EDITORIAL_POINTS;
+
+            // save the author with updated algoPoints
+            await author.save();
 
             return new Response(
                 JSON.stringify({
@@ -123,7 +143,7 @@ export async function PUT(request: Request) {
 
     try {
         const { commentId } = await request.json();
-  
+
         if (!commentId) {
             return new Response(
                 JSON.stringify({ success: false, message: "Missing comment id." }),

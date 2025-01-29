@@ -162,7 +162,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
     return (
         <div className="md:grid md:grid-cols-5 h-screen relative bg-slate-800 text-white">
 
-            <Card className="col-span-4 md:py-4 mx-0 md:px-6 flex-1 overflow-y-auto scrollbar-hide bg-inherit
+            <Card className="col-span-4 py-4 md:py-4 mx-0 md:px-6 flex-1 overflow-y-auto scrollbar-hide bg-inherit
                  text-white rounded-none border-none pb-2 md:pb-10"
                 style={{
                     scrollbarWidth: "none",
@@ -237,12 +237,12 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                             tracking-tight transition-colors first:mt-0 text-muted-foreground">
                                 Outro
                             </h2>
-                            <blockquote className="mt-6 border-l-2 pl-6 italic text-left mx-auto text-xs md:text-sm">
+                            <blockquote className="mt-6 border-l-2 pl-6 italic text-left mx-auto text-sm sm:text-xs md:text-sm">
                                 {editorial.outro}
                             </blockquote>
                         </section>
                     }
-
+ 
                     <section>
                         <EditorialTags tags={editorial.tags || []} />
                     </section>

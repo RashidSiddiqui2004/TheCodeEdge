@@ -1,11 +1,13 @@
+import { REWARDS } from "@/constants";
 import dbConnect from "@/lib/dbConnect";
 import EditorialModel from "@/model/Editorial";
+import UserModel from "@/model/User";
 
 export async function POST(request: Request) {
     await dbConnect();
 
     try {
-        const { id } = await request.json();  
+        const { id } = await request.json();
 
         if (!id) {
             return new Response(
@@ -26,6 +28,23 @@ export async function POST(request: Request) {
         // Increment the likes count
         editorial.likes += 1;
         await editorial.save();
+
+        const authorId = editorial.author;
+
+        const author = await UserModel.findById(authorId);
+
+        if (!author) {
+            return new Response(
+                JSON.stringify({ success: false, message: "Author not found." }),
+                { status: 404 }
+            );
+        }
+
+        // Increment Algopoints of the author
+        author.algoPoints += REWARDS.UPVOTE_ON_EDITORIAL_POINTS;
+
+        // save the author with updated algoPoints
+        await author.save();
 
         return new Response(
             JSON.stringify({

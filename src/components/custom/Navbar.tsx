@@ -1,13 +1,11 @@
 'use client';
-
-import React from 'react';
+ 
 import { APP_NAME } from '@/constants';
 import {
     SignOutButton,
     SignedIn,
     SignedOut,
-    UserButton,
-    useUser
+    UserButton, 
 } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -21,10 +19,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
-
-    const { user } = useUser();
-
-    const userName = user?.firstName?.toLowerCase() + "_" + user?.lastName?.toLowerCase();
 
     return (
         <nav className="flex justify-between py-3 px-3 bg-slate-200 text-slate-800 text-sm text-fell">
@@ -40,7 +34,7 @@ const Navbar = () => {
                 </Link>
 
                 <SignedOut>
-                    <Button className=' bg-slate-900 text-white hover:bg-slate-200 hover:text-slate-950'>
+                    <Button className=' bg-slate-900 text-white hover:bg-slate-800 hover:text-slate-100'>
                         <Link href={'/sign-up'}>Sign In</Link>
                     </Button>
                 </SignedOut>
@@ -54,7 +48,7 @@ const Navbar = () => {
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
-                                <Link href={`/profile/${userName}`}>Profile</Link>
+                                <Link href={`/profile`}>Profile</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <SignOutButton />

@@ -100,14 +100,14 @@ const EditorialCard: React.FC<EditorialCardProps> = ({ editorial, descriptionLim
             </CardHeader>
 
             <CardContent>
-                <div className="flex justify-between items-center mb-2">
-                    <div className="space-x-2">
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
+                    <div className="space-x-2 space-y-3 sm:space-y-0">
                         <Badge className="bg-gray-700 text-gray-300">{contestPlatform}</Badge>
                         {contestName && <Badge className="bg-gray-700 text-gray-300">{contestName}</Badge>}
                         <Badge variant={getDifficultyVariant(overallDifficulty)}>{overallDifficulty}</Badge>
                         <Badge className="bg-gray-700 text-gray-300">{languageUsed}</Badge>
                     </div>
-                    <div className="text-sm text-gray-400">by {authorName}</div>
+                    <div className="text-sm text-gray-400 text-right float-end">by {authorName}</div>
                 </div>
 
                 <div className="flex items-center space-x-4 mt-4">

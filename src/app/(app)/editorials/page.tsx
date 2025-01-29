@@ -19,7 +19,7 @@ const Page = () => {
 
     const { toast } = useToast();
 
-    const contestPlatforms: string[] = [ContestPlatforms.CodeChef, ContestPlatforms.Codeforces, ContestPlatforms.LeetCode];
+    const contestPlatforms: string[] = [ContestPlatforms.CodeChef, ContestPlatforms.Codeforces];
 
     const difficulties: string[] = [QuestionDifficulty.Easy, QuestionDifficulty.Medium, QuestionDifficulty.Hard, QuestionDifficulty.Expert];
 

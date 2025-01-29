@@ -2,8 +2,8 @@ import CTA from "@/components/custom/CTA";
 import Footer from "@/components/custom/Footer";
 import Heading from "@/components/custom/Heading";
 import Navbar from "@/components/custom/Navbar";
-import SampleEditorial from "@/components/custom/SampleEditorial";
-import TopContributors from "@/components/custom/TopContributors";
+import TopContributors from "@/components/custom/TopContributors"; 
+import LazyLoadedEmbeddedEditorial from "@/components/custom/LazyLoadedEmbeddedEditorial";
 
 export default function Home() {
   return (
@@ -12,7 +12,7 @@ export default function Home() {
       <Heading />
       <CTA />
       <div className="grid grid-cols-12 mt-32">
-        <SampleEditorial />
+        <LazyLoadedEmbeddedEditorial />
         <TopContributors />
       </div>
       <Footer />
