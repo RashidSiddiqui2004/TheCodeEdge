@@ -13,14 +13,7 @@ import TextDisplay from "@/components/ui/TextDisplay";
 import generateSlug from "@/lib/generateSlug";
 import { ObjectId } from "mongoose";
 import Link from "next/link";
-
-export interface SocialLinkInterface {
-    github?: string;
-    linkedin?: string;
-    leetcode?: string;
-    codechef?: string;
-    codeforces?: string;
-}
+import { SocialLinkInterface } from "@/types";
 
 interface SocialIconProps {
     platform: string;
@@ -58,12 +51,10 @@ export default function UserDetails({
 
     const [userData, setUserData] = useState<User | null>(null);
     const [editorials, setEditorials] = useState<Editorial[]>([]);
-    const [username, setUsername] = useState<string | null>(null);
 
     const fetchUserData = async () => {
         try {
             const resolvedParams = await params;
-            setUsername(resolvedParams.id);
 
             const response = await axios.get("/api/user/universalProfile", {
                 params: { username: resolvedParams.id },
@@ -80,6 +71,9 @@ export default function UserDetails({
                 });
             }
         } catch (error) {
+
+            console.log(error);
+
             toast({
                 title: "Error",
                 description: "An unexpected error occurred."
@@ -112,15 +106,14 @@ export default function UserDetails({
         }
     };
 
-
     useEffect(() => {
         fetchUserData();
     }, []);
 
     return (
-        <div className="py-8 flex justify-center items-center bg-slate-950 text-fell">
+        <div className="py-8 px-4 flex justify-center items-center bg-slate-950 text-fell">
 
-            <Card className="mx-auto bg-inherit text-white p-4">
+            <Card className="mx-auto bg-inherit text-white p-4 w-full">
                 <CardContent>
                     <div className="space-y-4">
 
@@ -155,14 +148,17 @@ export default function UserDetails({
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             {userData?.socialLinks &&
-                                Object.keys(userData.socialLinks).map((platform) => (
-                                    <SocialIcon
-                                        key={platform}
-                                        platform={platform}
-                                        url={userData?.socialLinks[platform] || ""}
-                                    />
+                                (Object.keys(userData.socialLinks) as (keyof SocialLinkInterface)[]).map((platform) => (
+                                    userData.socialLinks[platform] && (
+                                        <SocialIcon
+                                            key={platform}
+                                            platform={platform}
+                                            url={userData.socialLinks[platform] as string}
+                                        />
+                                    )
                                 ))}
                         </div>
+
                     </div>
 
                     <div className="border-t-2 mt-4 py-4">

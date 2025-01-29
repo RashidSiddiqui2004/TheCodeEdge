@@ -1,15 +1,14 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/router";
+import Link from "next/link"; 
 import React from "react";
 
 const AboutPage = () => {
 
-    const router = useRouter();
-
     return (
         <div className="bg-gray-900 text-white min-h-screen text-fell">
+            
             {/* Hero Section */}
             <div className="text-center py-16">
                 <h1 className="text-4xl mb-4">About CodeEdge</h1>
@@ -46,13 +45,13 @@ const AboutPage = () => {
             <div className="py-12 px-6 sm:px-12 lg:px-32 bg-gray-800">
                 <h2 className="text-3xl text-center mb-8">Meet Our Team</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
-                
-                    <div className="text-center"> 
+
+                    <div className="text-center">
                         <h3 className="text-xl">Rashid Siddiqui</h3>
                         <p className="text-gray-400">Founder & CEO</p>
-                    </div> 
+                    </div>
                     <div className="text-center">
-                       
+
                         <h3 className="text-xl">Ms. X</h3>
                         <p className="text-gray-400">CTO</p>
                     </div>
@@ -62,19 +61,13 @@ const AboutPage = () => {
             {/* Technologies Section */}
             <div className="py-12 px-6 sm:px-12 lg:px-32">
                 <h2 className="text-3xl font-bold text-center mb-8">Technologies We Use</h2>
-                <div className="flex flex-wrap justify-center gap-6">
-                    <div className="bg-gray-800 py-2 px-4 rounded-lg shadow-lg">
-                        React.js
-                    </div>
+                <div className="flex flex-wrap justify-center gap-6"> 
                     <div className="bg-gray-800 py-2 px-4 rounded-lg shadow-lg">
                         Next.js
                     </div>
                     <div className="bg-gray-800 py-2 px-4 rounded-lg shadow-lg">
                         Tailwind CSS
-                    </div>
-                    <div className="bg-gray-800 py-2 px-4 rounded-lg shadow-lg">
-                        Node.js
-                    </div>
+                    </div> 
                     <div className="bg-gray-800 py-2 px-4 rounded-lg shadow-lg">
                         MongoDB
                     </div>
@@ -87,9 +80,9 @@ const AboutPage = () => {
                 <p className="text-gray-200 mb-6">
                     Whether you are a seasoned developer or just starting, there &#39;s something here for everyone.
                 </p>
-                <Button onClick={() => router.push("/sign-up")} className="bg-gray-100 text-slate-950 px-6 py-2 rounded-lg hover:bg-gray-200 
+                <Button className="bg-gray-100 text-slate-950 px-6 py-2 rounded-lg hover:bg-gray-200 
                     transition">
-                    Get Started
+                    <Link href={'/sign-up'}>Get Started</Link>
                 </Button>
             </div>
         </div>

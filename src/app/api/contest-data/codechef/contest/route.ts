@@ -15,7 +15,19 @@ export async function GET(request: Request) {
             );
         }
 
-        const response = await axios.get(`https://www.codechef.com/api/contests/${contestID + 'B'}`);
+        const apiURL = process.env.CODECHEF_CONTEST_DATA_API_URL;
+
+        if (!apiURL) {
+            return new Response(
+                JSON.stringify({
+                    success: false,
+                    message: "Codechef API_2 not provided for fetching specific contest data.",
+                }),
+                { status: 404, headers: { "Content-Type": "application/json" } }
+            );
+        }
+
+        const response = await axios.get(`${apiURL}/${contestID + 'B'}`);
         const contestData = response.data;
 
         if (contestData) {
@@ -37,6 +49,9 @@ export async function GET(request: Request) {
             { status: 404, headers: { "Content-Type": "application/json" } }
         );
     } catch (error) {
+
+        console.log(error);
+
         return new Response(
             JSON.stringify({
                 success: false,

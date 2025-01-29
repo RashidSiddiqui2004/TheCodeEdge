@@ -16,6 +16,7 @@ import MoreFromAuthor from "./MoreFromAuthor";
 import { BreadCrumbComponent } from "./BreadCrumbComponent";
 import TextRenderer from "./TextRenderer";
 import { FaLink } from "react-icons/fa";
+import { cn } from "@/lib/utils";
 
 interface EditorialBodyProps {
     editorialid: string;
@@ -25,11 +26,16 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
     const user = useUser();
 
     const { toast } = useToast();
-    const [isDarkMode, setIsDarkMode] = useState(false);
     const [editorial, setEditorial] = useState<Editorial>();
     const [author, setAuthor] = useState<Author>();
+    const [userClerkId, setUserClerkId] = useState('');
     const [loading, setLoading] = useState(true);
+    const [isDarkMode, setIsDarkMode] = useState(true); // will provide it through the context, later
     const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
+
+    function toggleDarkMode(): void {
+        setIsDarkMode(!isDarkMode);
+    }
 
     const handleNavigate = (problemName: string) => {
         const targetElement = document.getElementById(problemName);
@@ -45,13 +51,8 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
         setIsCommentSectionOpen((prev) => !prev);
     }
 
-    const toggleDarkMode = () => {
-        setIsDarkMode((prev) => !prev);
-        document.documentElement.classList.toggle("dark");
-    };
-
     const handleUpdateLike = () => {
-        setEditorial((prevEditorial) => {
+        setEditorial((prevEditorial: any) => {
             if (!prevEditorial) {
                 return undefined;
             }
@@ -62,7 +63,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
         });
     };
 
-    const fetchAuthorName = async (author_id: any) => {
+    const fetchAuthorName = async (author_id: string) => {
         try {
 
             const response = await axios.get("/api/user", {
@@ -86,12 +87,6 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
         }
     };
 
-    if (!user.isSignedIn) {
-        return;
-    }
-
-    const clerkId = user.user.id;
-
     const fetchEditorial = async () => {
         try {
             const response = await axios.get("/api/editorials/id", {
@@ -109,6 +104,8 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                 });
             }
         } catch (error) {
+            console.log(error);
+
             toast({
                 title: "Error fetching editorial",
                 description: "An unexpected error occurred.",
@@ -128,7 +125,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
             const response = await axios.post("/api/comment",
                 {
                     editorialId: editorialid,
-                    commenterId: clerkId,
+                    commenterId: userClerkId,
                     content: content,
                 }
             );
@@ -147,9 +144,16 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
     };
 
     useEffect(() => {
+        if (user.user) {
+            setUserClerkId(user.user.id);
+        }
+
         fetchEditorial();
     }, []);
 
+    if (!user.isSignedIn) {
+        return <h1>Unauthenticated.. Please log in</h1>;
+    }
 
     if (loading) {
         return <h1>Loading...</h1>;
@@ -160,10 +164,11 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
     }
 
     return (
-        <div className="md:grid md:grid-cols-5 h-screen relative bg-slate-800 text-white">
+        <div
+            className={cn("md:grid md:grid-cols-5 h-screen relative transition-colors duration-300", isDarkMode ? "dark bg-gray-900" : "bg-gray-200")}>
 
             <Card className="col-span-4 py-4 md:py-4 mx-0 md:px-6 flex-1 overflow-y-auto scrollbar-hide bg-inherit
-                 text-white rounded-none border-none pb-2 md:pb-10"
+                rounded-none border-none pb-2 md:pb-10"
                 style={{
                     scrollbarWidth: "none",
                     msOverflowStyle: "none",
@@ -172,7 +177,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                 <BreadCrumbComponent />
 
                 <div id="home">
-                    <EditorialHeader editorial={editorial} author={author}
+                    <EditorialHeader editorial={editorial} author={author} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}
                         handleUpdateLike={handleUpdateLike} updateCommentState={handleCommentSection} />
                 </div>
 
@@ -186,7 +191,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                             tracking-tight transition-colors first:mt-0 text-muted-foreground">
                                 Introduction
                             </h2>
-                            <p className="text-lg text-gray-300 [&:not(:first-child)]:mt-2">{editorial.introduction}</p>
+                            <p className="text-lg [&:not(:first-child)]:mt-2">{editorial.introduction}</p>
                         </section>
                     }
 
@@ -196,7 +201,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                                 {/* Problem Name */}
 
                                 <div className=" flex gap-x-4 ">
-                                    <h2 className="text-xl font-semibold text-slate-200">
+                                    <h2 className="text-xl font-semibold">
                                         {problem.problemName}
                                     </h2>
 
@@ -213,7 +218,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                                 </div>
 
                                 <div className="mt-4">
-                                    <h3 className="text-lg font-medium text-gray-300">
+                                    <h3 className="text-lg font-medium">
                                         Approach
                                     </h3>
                                     <TextRenderer content={problem.approach} />
@@ -221,7 +226,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
 
                                 {problem.code && (
                                     <div className="mt-6">
-                                        <h3 className="text-lg font-medium text-gray-300">
+                                        <h3 className="text-lg font-medium">
                                             Solution Code
                                         </h3>
                                         <CodeEditor code={problem.code} isDarkMode={true} />
@@ -242,7 +247,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                             </blockquote>
                         </section>
                     }
- 
+
                     <section>
                         <EditorialTags tags={editorial.tags || []} />
                     </section>

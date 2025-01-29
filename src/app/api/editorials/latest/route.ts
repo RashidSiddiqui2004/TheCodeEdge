@@ -1,6 +1,5 @@
 import dbConnect from "@/lib/dbConnect";
-import EditorialModel from "@/model/Editorial";
-import { User } from "@/model/User";
+import EditorialModel from "@/model/Editorial"; 
 
 export async function GET() {
     try {

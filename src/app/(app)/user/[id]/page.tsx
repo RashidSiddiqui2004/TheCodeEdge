@@ -1,5 +1,4 @@
-import UserDetails from '@/components/custom/UserDetails';
-import React from 'react'
+import LazyLoadedUserDetails from '@/components/custom/LazyLoadedUserDetails';
 
 export default function page({
     params,
@@ -7,6 +6,6 @@ export default function page({
     params: Promise<{ id: string }>;
 }) {
     return (
-        <UserDetails params={params} />
+        <LazyLoadedUserDetails params={params} />
     )
 } 

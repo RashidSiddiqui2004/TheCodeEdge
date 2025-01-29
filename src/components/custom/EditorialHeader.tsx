@@ -2,12 +2,13 @@ import React from "react";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Moon, Sun } from "lucide-react";
 import { Editorial } from "@/model/Editorial";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import AuthorProfileEditorial from "./AuthorProfileEditorial";
 import { PiHandsClapping } from "react-icons/pi";
+import { Button } from "../ui/button";
 
 export interface Author {
     authorName: string;
@@ -18,12 +19,14 @@ interface EditorialHeaderProps {
     editorial: Editorial;
     author: Author | undefined;
     isDarkMode?: boolean;
+    toggleDarkMode: () => void;
     handleUpdateLike: () => void; // for updating likes on the editorial 
     updateCommentState?: () => void;
     isEmbedded?: boolean;
+    isToggleEnabled?: boolean;
 }
 
-const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, isEmbedded = false, isDarkMode = true, handleUpdateLike, updateCommentState = () => { } }) => {
+const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, isEmbedded = false, isDarkMode = true, toggleDarkMode, isToggleEnabled = false, handleUpdateLike, updateCommentState = () => { } }) => {
 
     const { toast } = useToast();
 
@@ -45,6 +48,9 @@ const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, is
                 });
             }
         } catch (error) {
+
+            console.log(error);
+
             toast({
                 title: "Error liking the editorial"
             });
@@ -68,7 +74,7 @@ const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, is
                         scroll-m-20 tracking-tight">{editorial.title}</CardTitle>
 
                         <div className="flex flex-col sm:flex-row justify-start gap-2 w-full
-                            text-sm text-muted-foreground flex-wrap py-2">
+                            text-sm text-muted-foreground flex-wrap py-2 relative">
 
                             <div className="flex flex-row justify-start items-center gap-3 sm:gap-2">
 
@@ -120,6 +126,7 @@ const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, is
 
                             </div>
 
+                            {/* likes and comments */}
                             <div className="flex flex-row justify-between mt-3 sm:mt-0 px-20 sm:px-0 border-y-2 py-3 sm:border-none sm:py-1
                              items-center gap-3 sm:gap-2">
                                 {/* likes icon */}
@@ -143,6 +150,15 @@ const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, is
                                     <span className={`text-sm font-semibold ${isDarkMode ? "text-white" : ""}`}>{editorial.comments.length}</span>
                                 </div>
                             </div>
+
+                            {
+                                isToggleEnabled &&
+                                <Button variant="outline" size="icon" onClick={toggleDarkMode}
+                                    className="absolute top-0 right-0">
+                                    {isDarkMode ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
+                                    <span className="sr-only">Toggle dark mode</span>
+                                </Button>
+                            }
 
                         </div>
                     </div>

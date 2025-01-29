@@ -3,6 +3,7 @@ import dbConnect from "@/lib/dbConnect";
 import CommentModel from "@/model/Comment";
 import EditorialModel from "@/model/Editorial";
 import UserModel from "@/model/User";
+import { ObjectId } from "mongoose";
 
 export async function GET(request: Request) {
     await dbConnect();
@@ -87,7 +88,7 @@ export async function POST(request: Request) {
         });
 
         if (newComment) {
-            editorial.comments.push(newComment._id);
+            editorial.comments.push(newComment._id as ObjectId);
 
             // save the editorial with new comment
             await editorial.save();

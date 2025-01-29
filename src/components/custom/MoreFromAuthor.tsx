@@ -6,7 +6,7 @@ import { ObjectId, Schema } from 'mongoose';
 import EditorialCard from './EditorialCard';
 import Link from 'next/link';
 import generateSlug from '@/lib/generateSlug';
-import { Button } from '../ui/button';
+import { Button } from '../ui/button'; 
 // import { PersonStanding, Terminal} from "lucide-react"
 // import {
 //     Alert,
@@ -52,18 +52,11 @@ const MoreFromAuthor: React.FC<MoreFromAuthorProps> = ({ author, authorId, curre
     }, [])
 
     return (
-        <div className='mx-4'>
+        <div className='mx-4'> 
 
-            <h3 className="mt-8 mb-6 scroll-m-20 text-xl font-semibold tracking-tight">
+            <h3 className="mt-8 mb-6 scroll-m-20 mx-4 text-sm sm:text-xl font-semibold tracking-tight">
                 More Editorials by {author?.authorName}
-            </h3>
-            
-            {/* <Alert>
-                <PersonStanding className="h-4 w-4" />
-                <AlertTitle>Heads up!</AlertTitle>
-                <AlertDescription> 
-                </AlertDescription>
-            </Alert> */}
+            </h3> 
 
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 gap-y-4'>
                 {recentEditorials?.map((editorial, index) => {

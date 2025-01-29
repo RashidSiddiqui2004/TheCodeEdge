@@ -1,12 +1,12 @@
 
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Comment } from '@/model/Comment'
 import CommentBody from './CommentBody'
-import { Schema, Types } from 'mongoose'
+import { Schema } from 'mongoose'
 import axios from 'axios'
 import { useToast } from '@/hooks/use-toast'
 import { useUser } from '@clerk/nextjs'
@@ -20,39 +20,41 @@ interface EditorialSideHeroProps {
     handleComment: (commentContent: string) => Promise<boolean>;
 }
 
-const CommentSection: React.FC<EditorialSideHeroProps> = ({ editorialId, commentsIds, handleComment, isCommentSectionOpen, updateCommentState }) => {
+const CommentSection: React.FC<EditorialSideHeroProps> = ({ commentsIds, handleComment, isCommentSectionOpen, updateCommentState }) => {
 
     const { user } = useUser();
     const { toast } = useToast();
     const [comments, setComments] = useState<Comment[]>();
     const [newComment, setNewComment] = useState("");
+    const [loadingComments, setloadingComments] = useState(false);
     const [submittingComment, setsubmittingComment] = useState<boolean>(false);
 
-    const fetchCommentsPopulated = useCallback(
-        async (editorialId: string) => {
-            try {
-                const response = await axios.get("/api/editorials/id/comments", {
-                    params: { editorialId },
-                });
+    // const fetchCommentsPopulated = useCallback(
+    //     async (editorialId: string) => {
+    //         try {
+    //             const response = await axios.get("/api/editorials/id/comments", {
+    //                 params: { editorialId },
+    //             });
 
-                if (response.data.success) {
-                    const fetchedComments = response.data.comments;
-                    setComments(fetchedComments);
-                } else {
-                    toast({
-                        title: "Failed to fetch comments",
-                        description: response.data.message || "Something went wrong.",
-                    });
-                }
+    //             if (response.data.success) {
+    //                 const fetchedComments = response.data.comments;
+    //                 setComments(fetchedComments);
+    //             } else {
+    //                 toast({
+    //                     title: "Failed to fetch comments",
+    //                     description: response.data.message || "Something went wrong.",
+    //                 });
+    //             }
 
-            } catch (error) {
-                console.error("Error fetching comments:", error);
-            }
-        },
-        [editorialId]
-    );
+    //         } catch (error) {
+    //             console.error("Error fetching comments:", error);
+    //         }
+    //     },
+    //     [editorialId]
+    // );
 
     const fetchComments = async (commentsIds: Schema.Types.ObjectId[]) => {
+        setloadingComments(true);
         try {
             const fetchedComments = await Promise.all(
                 commentsIds.map(async (commentId) => {
@@ -69,6 +71,8 @@ const CommentSection: React.FC<EditorialSideHeroProps> = ({ editorialId, comment
             setComments(fetchedComments.filter((comment: Comment) => comment !== null));
         } catch (error) {
             console.error("Error 😔 fetching comments:", error);
+        } finally {
+            setloadingComments(false);
         }
     };
 
@@ -93,6 +97,9 @@ const CommentSection: React.FC<EditorialSideHeroProps> = ({ editorialId, comment
                 });
             }
         } catch (error) {
+
+            console.log(error);
+
             toast({
                 title: "Failed to comment, pls try again.."
             });
@@ -157,7 +164,7 @@ const CommentSection: React.FC<EditorialSideHeroProps> = ({ editorialId, comment
                     ))
                 ) : (
                     <p className="text-sm text-gray-500 text-center mt-4">
-                        No comments yet. Be the first to comment!
+                        {loadingComments ? "Fetching comments..." : "No comments yet. Be the first to comment!"}
                     </p>
                 )}
             </div>

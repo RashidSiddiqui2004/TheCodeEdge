@@ -3,7 +3,19 @@ import axios from "axios";
 export async function GET() {
     try {
 
-        const response = await axios.get("https://www.codechef.com/api/list/contests/all?sort_by=START&sorting_order=asc&offset=0&mode=all");
+        const apiURL = process.env.CODECHEF_ALL_CONTESTS_API_URL;
+
+        if (!apiURL) {
+            return new Response(
+                JSON.stringify({
+                    success: false,
+                    message: "Codechef API_1 not provided for fetching all contests.",
+                }),
+                { status: 404, headers: { "Content-Type": "application/json" } }
+            );
+        }
+
+        const response = await axios.get(apiURL);
 
         const contestData = response.data.past_contests;
 
@@ -26,6 +38,8 @@ export async function GET() {
             { status: 404, headers: { "Content-Type": "application/json" } }
         );
     } catch (error) {
+
+        console.log(error);
 
         return new Response(
             JSON.stringify({

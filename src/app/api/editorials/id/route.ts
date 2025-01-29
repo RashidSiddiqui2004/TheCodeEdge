@@ -41,7 +41,7 @@ export async function GET(request: Request) {
             { status: 200, headers: { "Content-Type": "application/json" } }
         );
     } catch (error) {
-
+        console.log(error);
         return new Response(
             JSON.stringify({ success: false, message: "Internal server error." }),
             { status: 500, headers: { "Content-Type": "application/json" } }

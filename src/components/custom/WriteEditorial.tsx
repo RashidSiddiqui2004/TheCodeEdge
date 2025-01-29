@@ -10,41 +10,25 @@ import { useToast } from "@/hooks/use-toast";
 import { MonacoCodeEditorComponent } from "@/components/custom/MonacoCodeEditorComponent";
 import Navbar from "@/components/custom/Navbar";
 import axios from "axios";
-import { useUser, SignInButton } from "@clerk/nextjs";
-import { QuestionDifficulty } from "@/enums/QuestionDifficulty";
+import { useUser, SignInButton } from "@clerk/nextjs"; 
 import { enumsTheCodeEdge } from "@/enums/EnumsTheCodeEdge";
 import { editorialSchema } from "@/schemas/editorialSchema";
 import { contestProblemLinks, EDITORIAL_LIMITS } from "@/constants";
 import { ContestPlatforms } from "@/enums/ContestPlatforms";
 import TextDisplay from "@/components/ui/TextDisplay";
 import generateSlug from "@/lib/generateSlug";
-import getLeetcodeContestCode from "@/lib/getLeetcodeContestCode";
 import { Badge } from "../ui/badge";
 import { GiCancel } from "react-icons/gi";
-
-interface ContestData {
-    contestCode: string;
-    contestName: string;
-}
-
-interface ProblemData {
-    problemName: string;
-    problemUrl: string;
-}
-
-interface ProblemInput {
-    problemName: string;
-    approach: string;
-    code?: string;
-    difficulty: QuestionDifficulty;
-    link?: string;
-}
-
+import { ContestData, ProblemData, ProblemInput } from "@/types";
+import EditorialValidation from "./EditorialValidation";
+ 
 const WriteEditorial = () => {
+
     const { user } = useUser();
     const { toast } = useToast();
     const router = useRouter();
 
+    const [showSchema, setShowSchema] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -82,15 +66,6 @@ const WriteEditorial = () => {
                     }));
                     setListOfContests(contestNames);
                 }
-                else if (contestPlatform === ContestPlatforms.LeetCode) {
-
-                    const contestNames = contestsFetched.map((contestBody: any) => ({
-                        contestCode: getLeetcodeContestCode(contestBody.contest.title),
-                        contestName: contestBody.contest.title
-                    }));
-                    setListOfContests(contestNames);
-                }
-
                 else if (contestPlatform === ContestPlatforms.Codeforces) {
                     const contestNames = contestsFetched.map((contestBody: any) => ({
                         contestCode: contestBody?.id || "Unknown",
@@ -98,6 +73,15 @@ const WriteEditorial = () => {
                     }));
                     setListOfContests(contestNames);
                 }
+                // else if (contestPlatform === ContestPlatforms.LeetCode) {
+
+                //     const contestNames = contestsFetched.map((contestBody: any) => ({
+                //         contestCode: getLeetcodeContestCode(contestBody.contest.title),
+                //         contestName: contestBody.contest.title
+                //     }));
+                //     setListOfContests(contestNames);
+                // }
+
             }
         } catch (error) {
             console.log(error);
@@ -148,6 +132,8 @@ const WriteEditorial = () => {
                 // }
             }
         } catch (error) {
+            console.log(error);
+
             setListOfProblems([]);
         }
     };
@@ -226,6 +212,8 @@ const WriteEditorial = () => {
                 throw new Error(response.data.message || "Submission failed")
             }
         } catch (error) {
+            console.log(error);
+
             toast({
                 title: "Editorial Schema Validation Failed",
                 variant: "destructive",
@@ -280,7 +268,11 @@ const WriteEditorial = () => {
             <Navbar />
             <Card className="mx-auto bg-inherit border-none text-white">
                 <CardContent>
-                    <div className="space-y-6">
+                    <div className="space-y-6 relative">
+
+                        <div>
+                            <EditorialValidation/>
+                        </div>
 
                         {/* editorial title */}
                         <div className="space-y-2 flex gap-2 justify-center items-center text-3xl">
@@ -295,7 +287,7 @@ const WriteEditorial = () => {
                                 rows={1}
                                 className="w-full rounded flex text-3xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors resize-none overflow-hidden file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
                                 onInput={(e) => {
-                                    const target = e.target;
+                                    const target = e.target as HTMLTextAreaElement;
                                     target.style.height = "auto";
                                     target.style.height = `${target.scrollHeight}px`;
                                 }}
@@ -389,7 +381,7 @@ const WriteEditorial = () => {
                                 maxLength={EDITORIAL_LIMITS.MAX_INTRO}
                                 className="w-full rounded flex text-xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors resize-none overflow-hidden file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
                                 onInput={(e) => {
-                                    const target = e.target;
+                                    const target = e.target as HTMLTextAreaElement;
                                     target.style.height = "auto";
                                     target.style.height = `${target.scrollHeight}px`;
                                 }}
@@ -404,7 +396,7 @@ const WriteEditorial = () => {
 
                         </div>
 
-
+                        {/* problems input form */}
                         {problemInputs.map((problemInput, index) => (
                             <div key={index} className="mb-4 flex flex-col gap-y-3">
                                 {/* Problem Name Dropdown */}
@@ -446,7 +438,7 @@ const WriteEditorial = () => {
                                     rows={1}
                                     className="w-full rounded flex text-xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors resize-none overflow-hidden file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
                                     onInput={(e) => {
-                                        const target = e.target;
+                                        const target = e.target as HTMLTextAreaElement;
                                         target.style.height = "auto";
                                         target.style.height = `${target.scrollHeight}px`;
                                     }}
@@ -472,6 +464,7 @@ const WriteEditorial = () => {
                             </div>
                         ))}
 
+                        {/* to add new problems */}
                         <Button onClick={handleAddProblem}>Add {problemInputs.length === 0 ? "a" : "another"} Problem</Button>
 
                         {/* outro */}
@@ -487,7 +480,7 @@ const WriteEditorial = () => {
                                 maxLength={EDITORIAL_LIMITS.MAX_OUTRO}
                                 className="w-full rounded flex text-xl text-white bg-transparent px-3 py-1 shadow-sm transition-colors resize-none overflow-hidden file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
                                 onInput={(e) => {
-                                    const target = e.target;
+                                    const target = e.target as HTMLTextAreaElement;
                                     target.style.height = "auto";
                                     target.style.height = `${target.scrollHeight}px`;
                                 }}

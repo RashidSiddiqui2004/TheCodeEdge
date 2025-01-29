@@ -27,7 +27,7 @@ export async function GET() {
             { status: 404, headers: { "Content-Type": "application/json" } }
         );
     } catch (error) {
-
+        console.log(error);
         return new Response(
             JSON.stringify({
                 success: false,

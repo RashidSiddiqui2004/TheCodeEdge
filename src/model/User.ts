@@ -1,6 +1,6 @@
 
-import { SocialLinkInterface } from '@/app/(app)/user/[id]/page';
 import { AuthorBadge } from '@/enums/AuthorBadges';
+import { SocialLinkInterface } from '@/types';
 import mongoose, { Schema, Document, ObjectId } from 'mongoose';
 
 export interface User extends Document {

@@ -18,14 +18,8 @@ import { Editorial } from "@/model/Editorial";
 import { ObjectId } from "mongoose";
 import Link from "next/link";
 import generateSlug from "@/lib/generateSlug";
+import { SocialLinkInterface } from "@/types";
 
-export interface SocialLinkInterface {
-    github?: string;
-    linkedin?: string;
-    leetcode?: string;
-    codechef?: string;
-    codeforces?: string;
-}
 
 interface SocialIconProps {
     platform: string;
@@ -142,14 +136,16 @@ const Profile = () => {
             setIsSubmitting(false);
         }
     };
- 
-    const fetchUserData = async () => {
+
+    const fetchUserData = async (user: any) => {
         try {
             const response = await axios.get("/api/user/profile", { params: { clerkUserId: user.id } });
 
             if (response.data.success) {
                 const fetchedUser: User = response.data.user;
                 user.username = fetchedUser.username;
+
+                // populate the data from the fetched response
                 setFormData((prev) => ({
                     ...prev,
                     bio: fetchedUser.bio,
@@ -171,7 +167,7 @@ const Profile = () => {
         }
     };
 
-    const fetchEditorials = async () => {
+    const fetchEditorials = async (user: any) => {
         try {
             const response = await axios.get("/api/editorials", { params: { userId: user?.id } });
 
@@ -182,8 +178,8 @@ const Profile = () => {
 
             return;
 
-        } catch (error) { 
-            console.log("Error occured while fetching editorials: ", error); 
+        } catch (error) {
+            console.log("Error occured while fetching editorials: ", error);
             // toast({
             //     title: "Error fetching user editorials!",
             //     description: "An unexpected error occurred."
@@ -191,11 +187,12 @@ const Profile = () => {
         }
     }
 
-
-    useEffect(() => { 
-        fetchUserData();
-        fetchEditorials();
-    }, [toast, user]);
+    useEffect(() => {
+        if (user) {
+            fetchUserData(user);
+            fetchEditorials(user);
+        }
+    }, [user]);
 
 
     if (!user) {
@@ -252,15 +249,17 @@ const Profile = () => {
                             {errors.bio && <p className="text-red-500 text-sm">{errors.bio}</p>}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            {Object.keys(formData.socialLinks).map((platform) => (
-                                <SocialIcon
-                                    key={platform}
-                                    platform={platform}
-                                    url={formData.socialLinks[platform]}
-                                    handleSocialChange={handleSocialChange}
-                                    error={errors[`socialLinks.${platform}`]}
-                                />
-                            ))}
+
+                            {
+                                (Object.keys(formData.socialLinks) as (keyof SocialLinkInterface)[]).map((platform) => (
+                                    <SocialIcon
+                                        key={platform}
+                                        platform={platform}
+                                        url={formData.socialLinks[platform]}
+                                        handleSocialChange={handleSocialChange}
+                                        error={errors[`socialLinks.${platform}`]}
+                                    />
+                                ))}
                         </div>
                         <Button
                             type="button"

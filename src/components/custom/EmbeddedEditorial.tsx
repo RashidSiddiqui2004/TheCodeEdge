@@ -1,31 +1,44 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { ThumbsUp, MessageSquare, ChevronDown, ChevronUp, Moon, Sun, Link } from "lucide-react"
 import CodeEditor from "./CodeEditor"
 import { cn } from "@/lib/utils"
 import { Editorial } from "@/model/Editorial"
 import EditorialHeader, { Author } from "./EditorialHeader"
 import axios from "axios"
 import TextRenderer from "./TextRenderer"
-import EditorialTags from "./EditorialTags"
 
 const EmbeddedEditorial = () => {
+
+    // change this to featured editorial of the week
 
     const editorialid = "6797e0d5b61d80eba648acf4";
     const [editorial, setEditorial] = useState<Editorial>();
     const [author, setAuthor] = useState<Author>();
     const [loading, setLoading] = useState(true);
-    const [isDarkMode, setIsDarkMode] = useState(false)
+    const [isDarkMode, setIsDarkMode] = useState(false);
     const [showFullContent, setShowFullContent] = useState(false);
 
     function toggleDarkMode(): void {
         setIsDarkMode(!isDarkMode);
     }
+
+    const fetchAuthorName = async (author_id: string) => {
+        try {
+
+            const response = await axios.get("/api/user", {
+                params: { userId: author_id },
+            });
+
+            if (response.data.success) {
+                setAuthor(response.data.author);
+            }
+        } catch (error) {
+            console.error("Error fetching author :", error);
+        }
+    };
 
     const fetchEditorial = async () => {
         try {
@@ -45,23 +58,8 @@ const EmbeddedEditorial = () => {
         }
     };
 
-    const fetchAuthorName = async (author_id: any) => {
-        try {
-
-            const response = await axios.get("/api/user", {
-                params: { userId: author_id },
-            });
-
-            if (response.data.success) {
-                setAuthor(response.data.author);
-            }
-        } catch (error) {
-            console.error("Error fetching author :", error);
-        }
-    };
-
     const handleUpdateLike = () => {
-        setEditorial((prevEditorial) => {
+        setEditorial((prevEditorial: any) => {
             if (!prevEditorial) {
                 return undefined;
             }
@@ -98,7 +96,7 @@ const EmbeddedEditorial = () => {
 
                 <div id="home">
                     <EditorialHeader editorial={editorial} author={author}
-                        handleUpdateLike={handleUpdateLike} isEmbedded={true} isDarkMode={isDarkMode} />
+                        handleUpdateLike={handleUpdateLike} isEmbedded={true} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
                 </div>
 
 

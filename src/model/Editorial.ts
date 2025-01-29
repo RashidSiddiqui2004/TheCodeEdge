@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Types, ObjectId } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
 import { enumsTheCodeEdge } from "@/enums/EnumsTheCodeEdge";
 
 const { ContestPlatforms, ProgrammingLanguages, QuestionDifficulty } = enumsTheCodeEdge;

@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Info } from "lucide-react"
 import axios from "axios"
+import Link from "next/link"
 
 export interface Contributor {
     username: string
@@ -38,7 +39,7 @@ const TopContributors = () => {
     }
 
     return (
-        <Card className="col-span-4 w-full max-w-md mx-auto rounded-sm">
+        <Card className="col-span-4 w-full max-w-md mx-auto rounded-sm" id="leaderboard">
             <CardContent className="p-3">
                 <div className="flex justify-center items-center gap-2 mb-6">
                     <h2 className="text-2xl font-bold">Top Contributors</h2>
@@ -66,7 +67,7 @@ const TopContributors = () => {
                         >
                             <div className="flex items-center gap-3">
                                 <span className="font-bold text-lg">{index + 1}</span>
-                                <span className="font-medium">{contributor.username}</span>
+                                <Link href={`/user/${contributor.username}`} target="_blank" className="font-medium">{contributor.username}</Link>
                             </div>
                             <span className="font-semibold">{contributor.algopoints} AlgoPoints</span>
                         </li>

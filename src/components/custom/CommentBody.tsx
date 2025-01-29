@@ -58,7 +58,7 @@ const CommentBody: React.FC<CommentProps> = ({ initialComment }) => {
     }, []);
 
     return (
-        <Card className="mb-4 w-full text-fell">
+        <Card className="mb-4 w-full text-fell text-white bg-slate-800">
             <CardContent className="pt-4">
                 <div className="flex items-start gap-2">
                     <Avatar>
@@ -76,8 +76,9 @@ const CommentBody: React.FC<CommentProps> = ({ initialComment }) => {
                 </div>
                 <p className="mt-2 italic">{initialComment.content}</p>
             </CardContent>
+            
             <CardFooter className="flex justify-between p-0 mx-3 mb-1">
-                <Button variant="ghost" size="sm" className='cursor-pointer' onClick={likeComment}>
+                <Button variant="ghost" size="sm" className='cursor-pointer hover:bg-inherit' onClick={likeComment}>
                     <PiHandsClapping className="h-4 w-4" />
                     {initialComment.likes} Likes
                 </Button>
