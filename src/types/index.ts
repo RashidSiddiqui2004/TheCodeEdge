@@ -18,6 +18,16 @@ export interface ProblemData {
     problemUrl: string;
 }
 
+export interface CodechefProblemFromAPI {
+    name: string;
+    problem_url: string;
+}
+
+export interface CodeforcesProblemFromAPI {
+    name: string;
+    index: string;
+}
+
 export interface ProblemInput {
     problemName: string;
     approach: string;

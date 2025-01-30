@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react'
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -9,20 +8,21 @@ import CommentBody from './CommentBody'
 import { Schema } from 'mongoose'
 import axios from 'axios'
 import { useToast } from '@/hooks/use-toast'
-import { useUser } from '@clerk/nextjs'
+import { SignInButton, useUser } from '@clerk/nextjs'
 import { IoIosClose } from "react-icons/io";
+import type { UserResource } from "@clerk/types";
 
 interface EditorialSideHeroProps {
     isCommentSectionOpen: boolean;
     updateCommentState: () => void;
     editorialId?: string;
     commentsIds: Schema.Types.ObjectId[];
+    user: UserResource | null | undefined;
     handleComment: (commentContent: string) => Promise<boolean>;
 }
 
-const CommentSection: React.FC<EditorialSideHeroProps> = ({ commentsIds, handleComment, isCommentSectionOpen, updateCommentState }) => {
-
-    const { user } = useUser();
+const CommentSection: React.FC<EditorialSideHeroProps> = ({ commentsIds, user, handleComment, isCommentSectionOpen, updateCommentState }) => {
+ 
     const { toast } = useToast();
     const [comments, setComments] = useState<Comment[]>();
     const [newComment, setNewComment] = useState("");
@@ -127,33 +127,59 @@ const CommentSection: React.FC<EditorialSideHeroProps> = ({ commentsIds, handleC
             </div>
 
 
-            <div className="w-full flex items-start gap-4 mb-6">
-                <Avatar className="shrink-0">
-                    <AvatarImage
-                        src={user?.imageUrl}
-                        alt={user?.username || "user"}
-                        className="rounded-full"
-                    />
-                    <AvatarFallback>{user?.username?.charAt(0)}</AvatarFallback>
-                </Avatar>
+            {
+                user?.id ?
 
-                <div className="flex-1">
-                    <Textarea
-                        placeholder="Add a comment..."
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                        className="w-full resize-none text-sm border-gray-300 rounded-lg focus:ring focus:ring-indigo-300 focus:outline-none"
-                        rows={2}
-                    />
-                    <Button
-                        onClick={handleNewComment}
-                        className="mt-2 w-fit text-sm font-medium bg-slate-900 text-white hover:bg-indigo-700 rounded-lg"
-                        disabled={submittingComment}
-                    >
-                        {submittingComment ? "Posting..." : "Post Comment"}
-                    </Button>
-                </div>
-            </div>
+                    (
+                        <div className="w-full flex items-start gap-4 mb-6">
+
+                            <Avatar className="shrink-0">
+                                <AvatarImage
+                                    src={user?.imageUrl}
+                                    alt={user?.username || "user"}
+                                    className="rounded-full"
+                                />
+                                <AvatarFallback>{user?.username?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+
+                            <div className='flex-1'>
+                                <Textarea
+                                    placeholder="Add a comment..."
+                                    value={newComment}
+                                    onChange={(e) => setNewComment(e.target.value)}
+                                    className="w-full resize-none text-sm border-gray-300 rounded-lg focus:ring focus:ring-indigo-300 focus:outline-none"
+                                    rows={2}
+                                />
+
+                                <Button
+                                    onClick={handleNewComment}
+                                    className="mt-2 w-fit text-sm font-medium bg-slate-900 text-white hover:bg-indigo-700 rounded-lg"
+                                    disabled={submittingComment}
+                                >
+                                    {submittingComment ? "Posting..." : "Post Comment"}
+                                </Button>
+                            </div>
+
+                        </div>
+                    )
+                    :
+                    (
+                        <div className="w-full flex flex-col items-center justify-center gap-3  mb-2
+                            border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-md
+                          bg-gray-100 dark:bg-gray-800">
+                            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+                                Want to join the discussion? 🔥
+                            </h2>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                Please log in to leave a comment and share your thoughts.
+                            </p>
+                            <div className="px-4 py-2 text-white bg-slate-600 font-medium rounded-md transition">
+                                <SignInButton />
+                            </div>
+                        </div>
+
+                    )
+            }
 
             <div className="w-full divide-y divide-gray-200">
                 {comments && comments?.length > 0 ? (

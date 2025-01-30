@@ -9,6 +9,11 @@ import { Editorial } from "@/model/Editorial"
 import EditorialHeader, { Author } from "./EditorialHeader"
 import axios from "axios"
 import TextRenderer from "./TextRenderer"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ProgrammingLanguages } from "@/enums/Languages"
+import Link from "next/link"
+import generateSlug from "@/lib/generateSlug"
+import { ObjectId } from "mongoose"
 
 const EmbeddedEditorial = () => {
 
@@ -78,21 +83,36 @@ const EmbeddedEditorial = () => {
         return <h1>Loading...</h1>;
     }
 
+
     if (!editorial) {
-        return <h1>Editorial Not Found</h1>;
-    }
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Alert variant="default">
+                    <AlertTitle>Editorial Not Found</AlertTitle>
+                    <AlertDescription>The requested editorial does not exist or may have been removed.</AlertDescription>
+                </Alert>
+            </div>
+        );
+    } 
 
     return (
         <div
             className={cn("col-span-8 mx-4 transition-colors duration-300 max-w-screen", isDarkMode ? "dark bg-gray-900" : "bg-gray-100")}
         >
             <Card className="col-span-4 md:py-4 mx-0 md:px-6 flex-1 scrollbar-hide bg-inherit
-                 rounded-none border-none pb-2 md:pb-10"
+                 rounded-none border-none pb-2 md:pb-10 relative"
                 style={{
                     scrollbarWidth: "none",
                     msOverflowStyle: "none",
                 }}>
 
+                <div className="absolute top-2 right-2"> 
+                    <Button>
+                        <Link href={`/editorial/${generateSlug(editorial.title, (editorial._id as ObjectId).toString())}`}>
+                            View in Page
+                        </Link> 
+                    </Button>
+                </div>
 
                 <div id="home">
                     <EditorialHeader editorial={editorial} author={author}
@@ -142,7 +162,7 @@ const EmbeddedEditorial = () => {
                                                 <h3 className="text-lg font-medium">
                                                     Solution Code
                                                 </h3>
-                                                <CodeEditor code={problem.code} isDarkMode={true} />
+                                                <CodeEditor code={problem.code} isDarkMode={true} language={editorial.languageUsed as ProgrammingLanguages} />
                                             </div>
                                         )
                                     )

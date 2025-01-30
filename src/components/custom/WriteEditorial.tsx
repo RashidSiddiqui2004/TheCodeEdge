@@ -99,7 +99,7 @@ const WriteEditorial = () => {
             if (response.data.success) {
 
                 if (contestPlatform === ContestPlatforms.CodeChef) {
-                    const problemsFetched = response.data.contestData.problems;
+                    const problemsFetched = response.data.contestData;
 
                     const problemsData: ProblemData[] = Object.entries(problemsFetched).map(([_, problem]: [string, any]) => ({
                         problemName: problem.name,

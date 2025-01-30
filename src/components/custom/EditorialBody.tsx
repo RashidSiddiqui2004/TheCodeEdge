@@ -17,13 +17,17 @@ import { BreadCrumbComponent } from "./BreadCrumbComponent";
 import TextRenderer from "./TextRenderer";
 import { FaLink } from "react-icons/fa";
 import { cn } from "@/lib/utils";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ProgrammingLanguages } from "@/enums/Languages";
 
 interface EditorialBodyProps {
     editorialid: string;
 }
 
 const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
-    const user = useUser();
+    const { user } = useUser();
 
     const { toast } = useToast();
     const [editorial, setEditorial] = useState<Editorial>();
@@ -32,6 +36,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
     const [loading, setLoading] = useState(true);
     const [isDarkMode, setIsDarkMode] = useState(true); // will provide it through the context, later
     const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
+    const [codeBlocksStatus, setcodeBlocksStatus] = useState<Record<string, boolean>>({}); // an object with structure {"name" : boolean}
 
     function toggleDarkMode(): void {
         setIsDarkMode(!isDarkMode);
@@ -95,6 +100,20 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
 
             if (response.data.success) {
                 setEditorial(response.data.editorial);
+
+                if (response.data.editorial.problems) {
+                    const problems = response.data.editorial.problems;
+                    // fill codeBlocksStatus object
+
+                    setcodeBlocksStatus(
+                        problems.reduce((acc: Record<string, boolean>, problem: any) => {
+                            acc[problem.problemName] = false;
+                            return acc;
+                        }, {})
+                    );
+
+                }
+
                 const author_id = response.data.editorial.author;
                 fetchAuthorName(author_id);
             } else {
@@ -105,7 +124,6 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
             }
         } catch (error) {
             console.log(error);
-
             toast({
                 title: "Error fetching editorial",
                 description: "An unexpected error occurred.",
@@ -144,23 +162,42 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
     };
 
     useEffect(() => {
-        if (user.user) {
-            setUserClerkId(user.user.id);
+        if (user) {
+            setUserClerkId(user.id);
         }
 
         fetchEditorial();
     }, []);
 
-    if (!user.isSignedIn) {
-        return <h1>Unauthenticated.. Please log in</h1>;
-    }
+    // if (!user.isSignedIn) {
+    //     return (
+    //         <div className="flex items-center justify-center h-screen">
+    //             <Alert variant="destructive" className="w-fit h-fit mx-10 text-xl">
+    //                 <AlertTitle>Unauthenticated</AlertTitle>
+    //                 <AlertDescription>Please log in to access this content.</AlertDescription>
+    //                 <Button variant="outline" className="mt-2">Log In</Button>
+    //             </Alert>
+    //         </div>
+    //     );
+    // }
 
     if (loading) {
-        return <h1>Loading...</h1>;
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+            </div>
+        );
     }
 
     if (!editorial) {
-        return <h1>Editorial Not Found</h1>;
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Alert variant="default">
+                    <AlertTitle>Editorial Not Found</AlertTitle>
+                    <AlertDescription>The requested editorial does not exist or may have been removed.</AlertDescription>
+                </Alert>
+            </div>
+        );
     }
 
     return (
@@ -178,7 +215,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
 
                 <div id="home">
                     <EditorialHeader editorial={editorial} author={author} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}
-                        handleUpdateLike={handleUpdateLike} updateCommentState={handleCommentSection} />
+                        handleUpdateLike={handleUpdateLike} updateCommentState={handleCommentSection} user={user} />
                 </div>
 
 
@@ -195,9 +232,10 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                         </section>
                     }
 
-                    <section className="">
+                    <section>
+
                         {editorial.problems.map((problem, index) => (
-                            <div key={index} className="border-t border-gray-500 pt-4" id={problem.problemName}>
+                            <div key={index} className="border-t border-gray-500 pt-4 mt-3" id={problem.problemName}>
                                 {/* Problem Name */}
 
                                 <div className=" flex gap-x-4 ">
@@ -217,6 +255,8 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                                     )}
                                 </div>
 
+                                {/* approach to the problem */}
+
                                 <div className="mt-4">
                                     <h3 className="text-lg font-medium">
                                         Approach
@@ -224,16 +264,47 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                                     <TextRenderer content={problem.approach} />
                                 </div>
 
-                                {problem.code && (
+                                {/* solution to the problem */}
+
+                                {(problem.code && codeBlocksStatus[problem.problemName]) && (
                                     <div className="mt-6">
-                                        <h3 className="text-lg font-medium">
-                                            Solution Code
-                                        </h3>
-                                        <CodeEditor code={problem.code} isDarkMode={true} />
+                                        <h3 className="text-lg font-medium">Solution Code</h3>
+
+                                        <Button
+                                            onClick={() => {
+                                                setcodeBlocksStatus((prevStatus) => ({
+                                                    ...prevStatus,
+                                                    [problem.problemName]: false,
+                                                }));
+                                            }}
+                                        >
+                                            Hide Code
+                                        </Button>
+
+                                        <CodeEditor code={problem.code} isDarkMode={true} language={editorial.languageUsed as ProgrammingLanguages} />
+
+                                    </div>
+                                )
+                                }
+                                {(problem.code && !codeBlocksStatus[problem.problemName]) && (
+                                    <div>
+                                        <Button
+                                            className="p-2"
+                                            onClick={() => {
+                                                setcodeBlocksStatus((prevStatus) => ({
+                                                    ...prevStatus,
+                                                    [problem.problemName]: true,
+                                                }));
+                                            }}
+                                        >
+                                            Show Code
+                                        </Button>
                                     </div>
                                 )}
+
                             </div>
                         ))}
+
                     </section>
 
                     {editorial.outro &&
@@ -263,6 +334,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
                     updateCommentState={handleCommentSection}
                     editorialId={editorialid}
                     handleComment={handleCommentOnEditorial}
+                    user={user}
                 />
             }
 

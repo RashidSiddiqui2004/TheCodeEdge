@@ -7,26 +7,27 @@ import { Editorial } from "@/model/Editorial";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import AuthorProfileEditorial from "./AuthorProfileEditorial";
-import { PiHandsClapping } from "react-icons/pi";
+import { PiHandsClapping, PiShare } from "react-icons/pi";
 import { Button } from "../ui/button";
+import type { UserResource } from "@clerk/types";
 
 export interface Author {
     authorName: string;
     authorImage: string;
 }
-
 interface EditorialHeaderProps {
     editorial: Editorial;
     author: Author | undefined;
+    user: UserResource | null | undefined; // Clerk's user object (null if not signed in)
     isDarkMode?: boolean;
     toggleDarkMode: () => void;
-    handleUpdateLike: () => void; // for updating likes on the editorial 
+    handleUpdateLike: () => void;
     updateCommentState?: () => void;
     isEmbedded?: boolean;
     isToggleEnabled?: boolean;
 }
 
-const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, isEmbedded = false, isDarkMode = true, toggleDarkMode, isToggleEnabled = false, handleUpdateLike, updateCommentState = () => { } }) => {
+const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, user, isEmbedded = false, isDarkMode = true, toggleDarkMode, isToggleEnabled = false, handleUpdateLike, updateCommentState = () => { } }) => {
 
     const { toast } = useToast();
 
@@ -34,6 +35,15 @@ const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, is
         const editorialId = editorial._id;
 
         try {
+
+            if (!user?.id) {
+                toast({
+                    title: "Login required",
+                    description: "Please sign in to like this editorial.",
+                });
+                return;
+            }
+
             const response = await axios.post("/api/editorials/like", {
                 id: editorialId,
             });
@@ -56,6 +66,25 @@ const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, is
             });
         }
     }
+
+    const shareEditorialLink = async () => {
+        try {
+            const url = window.location.href;
+            await navigator.clipboard.writeText(url);
+
+            toast({
+                title: "Link Copied!",
+                description: "The editorial link has been copied to your clipboard.",
+            });
+        } catch (error) {
+            console.error("Failed to copy link:", error);
+            toast({
+                title: "Error",
+                description: "Could not copy the link. Please try again.",
+                variant: "destructive",
+            });
+        }
+    };
 
     return (
         <div className="my-3">
@@ -127,7 +156,7 @@ const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, is
                             </div>
 
                             {/* likes and comments */}
-                            <div className="flex flex-row justify-between mt-3 sm:mt-0 px-20 sm:px-0 border-y-2 py-3 sm:border-none sm:py-1
+                            <div className="flex flex-row justify-between mt-3 sm:mt-0 px-14 sm:px-0 border-y-2 py-3 sm:border-none sm:py-1
                              items-center gap-3 sm:gap-2">
                                 {/* likes icon */}
                                 <div className="flex items-center gap-1">
@@ -149,6 +178,12 @@ const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, is
 
                                     <span className={`text-sm font-semibold ${isDarkMode ? "text-white" : ""}`}>{editorial.comments.length}</span>
                                 </div>
+
+                                <div className="flex items-center gap-1">
+                                    <PiShare className={`w-5 h-5 cursor-pointer ${isDarkMode ? "text-white" : ""}`}
+                                        onClick={() => { shareEditorialLink() }} />
+                                </div>
+
                             </div>
 
                             {
