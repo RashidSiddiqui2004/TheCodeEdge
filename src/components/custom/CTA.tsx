@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 const CTA = () => {
     return (
-        <div className='flex gap-8 justify-center w-full'>
+        <div className='flex gap-8 justify-center mx-4 px-3'>
             <Button className='bg-white text-black hover:bg-slate-300 p-6 rounded-full'>
                 <Link href={'/editorials'}> Explore Editorials</Link>
             </Button>

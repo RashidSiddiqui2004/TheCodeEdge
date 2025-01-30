@@ -39,7 +39,7 @@ const TopContributors = () => {
     }
 
     return (
-        <Card className="col-span-4 w-full max-w-md mx-auto rounded-sm" id="leaderboard">
+        <Card className="col-span-4 rounded-sm mx-4 sm:mx-auto mt-3 sm:mt-0 sm:max-w-md" id="leaderboard">
             <CardContent className="p-3">
                 <div className="flex justify-center items-center gap-2 mb-6">
                     <h2 className="text-2xl font-bold">Top Contributors</h2>

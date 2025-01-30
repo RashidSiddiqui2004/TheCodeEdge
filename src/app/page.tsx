@@ -11,7 +11,7 @@ export default function Home() {
       <Navbar />
       <Heading />
       <CTA />
-      <div className="grid grid-cols-12 mt-32">
+      <div className="sm:grid sm:grid-cols-12 mt-32">
         <LazyLoadedEmbeddedEditorial />
         <TopContributors />
       </div>

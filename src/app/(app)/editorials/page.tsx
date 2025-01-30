@@ -72,7 +72,7 @@ const Page = () => {
 
             <div className="mx-auto grid grid-cols-12 gap-x-8">
 
-                <div className="col-span-3 space-y-6 flex-col sticky top-0 justify-center px-4 my-0 border-r-2 py-3 h-screen">
+                <div className="hidden sm:block col-span-3 space-y-6 flex-col sticky top-0 justify-center px-4 my-0 border-r-2 py-3 h-screen">
                     <SearchBar keyword={searchKeyword} updateKeyword={setSearchKeyword} />
                     <Filter
                         title="Platforms"
@@ -88,7 +88,7 @@ const Page = () => {
                     />
                 </div>
 
-                <div className="col-span-9 flex-1 overflow-y-auto scrollbar-hide mb-8">
+                <div className="col-span-12 sm:col-span-9 flex-1 overflow-y-auto scrollbar-hide mb-8">
 
                     <div className="text-white p-8 mb-8">
                         <div className="max-w-6xl mx-auto">
