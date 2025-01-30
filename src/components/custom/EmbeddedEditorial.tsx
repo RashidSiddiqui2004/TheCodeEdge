@@ -14,11 +14,13 @@ import { ProgrammingLanguages } from "@/enums/Languages"
 import Link from "next/link"
 import generateSlug from "@/lib/generateSlug"
 import { ObjectId } from "mongoose"
+import { useUser } from "@clerk/nextjs"
 
 const EmbeddedEditorial = () => {
 
     // change this to featured editorial of the week
 
+    const { user } = useUser();
     const editorialid = "6797e0d5b61d80eba648acf4";
     const [editorial, setEditorial] = useState<Editorial>();
     const [author, setAuthor] = useState<Author>();
@@ -93,7 +95,7 @@ const EmbeddedEditorial = () => {
                 </Alert>
             </div>
         );
-    } 
+    }
 
     return (
         <div
@@ -106,16 +108,16 @@ const EmbeddedEditorial = () => {
                     msOverflowStyle: "none",
                 }}>
 
-                <div className="absolute top-2 right-2"> 
+                <div className="absolute top-2 right-2">
                     <Button>
                         <Link href={`/editorial/${generateSlug(editorial.title, (editorial._id as ObjectId).toString())}`}>
                             View in Page
-                        </Link> 
+                        </Link>
                     </Button>
                 </div>
 
                 <div id="home">
-                    <EditorialHeader editorial={editorial} author={author}
+                    <EditorialHeader editorial={editorial} author={author} user={user}
                         handleUpdateLike={handleUpdateLike} isEmbedded={true} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
                 </div>
 
