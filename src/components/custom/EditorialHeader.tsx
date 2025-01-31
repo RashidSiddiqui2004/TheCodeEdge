@@ -14,7 +14,9 @@ import type { UserResource } from "@clerk/types";
 export interface Author {
     authorName: string;
     authorImage: string;
+    authorClerkId: string;
 }
+
 interface EditorialHeaderProps {
     editorial: Editorial;
     author: Author | undefined;
@@ -43,6 +45,14 @@ const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, us
                 });
                 return;
             }
+  
+            
+            if (user?.id && user.id === (author?.authorClerkId)) {
+                toast({
+                    title: "You can't applaud your own editorial!",
+                });
+                return;
+            }
 
             const response = await axios.post("/api/editorials/like", {
                 id: editorialId,
@@ -51,12 +61,17 @@ const EditorialHeader: React.FC<EditorialHeaderProps> = ({ author, editorial, us
 
             if (response.data.success) {
                 handleUpdateLike();
+                toast({
+                    title: "Applauded the editorial ❤️!",
+                });
+                return;
             }
             else {
                 toast({
                     title: "Failed to like the editorial"
                 });
             }
+
         } catch (error) {
 
             console.log(error);

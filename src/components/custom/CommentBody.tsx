@@ -27,16 +27,16 @@ const CommentBody: React.FC<CommentProps> = ({ initialComment }) => {
 
             if (response.data.success) {
                 toast({
-                    title: "Liked ❤️ the comment"
+                    title: "Applauded ❤️ the comment"
                 });
             } else {
                 toast({
-                    title: "Failed 😔 to like the comment"
+                    title: "Failed 😔 to applaud the comment"
                 });
             }
 
         } catch (error) {
-            console.error("Error 😔 fetching comment:", error);
+            console.error("Error 😔 applauding fetching comment:", error);
         }
     }
 
@@ -76,7 +76,7 @@ const CommentBody: React.FC<CommentProps> = ({ initialComment }) => {
                 </div>
                 <p className="mt-2 italic">{initialComment.content}</p>
             </CardContent>
-            
+
             <CardFooter className="flex justify-between p-0 mx-3 mb-1">
                 <Button variant="ghost" size="sm" className='cursor-pointer hover:bg-inherit' onClick={likeComment}>
                     <PiHandsClapping className="h-4 w-4" />

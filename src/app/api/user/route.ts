@@ -24,7 +24,8 @@ export async function GET(request: Request) {
 
             const userData: Author = {
                 authorName: userFromDB.username,
-                authorImage: userFromDB.imageUrl
+                authorImage: userFromDB.imageUrl,
+                authorClerkId: userFromDB.clerkUserId
             };
 
             return new Response(

@@ -52,6 +52,8 @@ export async function POST(request: Request) {
         const { editorialId, commenterId, content } = await request.json();
 
         if (!editorialId || !commenterId || !content) {
+            console.log(editorialId, commenterId, content);
+            
             return new Response(
                 JSON.stringify({ success: false, message: "Missing required fields." }),
                 { status: 400 }

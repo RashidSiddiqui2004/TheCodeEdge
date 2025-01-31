@@ -31,8 +31,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
 
     const { toast } = useToast();
     const [editorial, setEditorial] = useState<Editorial>();
-    const [author, setAuthor] = useState<Author>();
-    const [userClerkId, setUserClerkId] = useState('');
+    const [author, setAuthor] = useState<Author>(); 
     const [loading, setLoading] = useState(true);
     const [isDarkMode, setIsDarkMode] = useState(true); // will provide it through the context, later
     const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
@@ -143,7 +142,7 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
             const response = await axios.post("/api/comment",
                 {
                     editorialId: editorialid,
-                    commenterId: userClerkId,
+                    commenterId: author?.authorClerkId,
                     content: content,
                 }
             );
@@ -161,25 +160,10 @@ const EditorialBody: React.FC<EditorialBodyProps> = ({ editorialid }) => {
         }
     };
 
-    useEffect(() => {
-        if (user) {
-            setUserClerkId(user.id);
-        }
-
+    useEffect(() => {  
         fetchEditorial();
     }, []);
-
-    // if (!user.isSignedIn) {
-    //     return (
-    //         <div className="flex items-center justify-center h-screen">
-    //             <Alert variant="destructive" className="w-fit h-fit mx-10 text-xl">
-    //                 <AlertTitle>Unauthenticated</AlertTitle>
-    //                 <AlertDescription>Please log in to access this content.</AlertDescription>
-    //                 <Button variant="outline" className="mt-2">Log In</Button>
-    //             </Alert>
-    //         </div>
-    //     );
-    // }
+ 
 
     if (loading) {
         return (

@@ -96,8 +96,7 @@ const CommentSection: React.FC<EditorialSideHeroProps> = ({ commentsIds, user, h
                     title: "Failed to comment, pls try again.."
                 });
             }
-        } catch (error) {
-
+        } catch (error) { 
             console.log(error);
 
             toast({
