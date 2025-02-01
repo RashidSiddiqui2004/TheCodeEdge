@@ -6,9 +6,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
     try {
         await dbConnect();
-
-        console.log("hello");
-
+  
         // Sort by algoPoints in decreasing order, fetch only top 20 participants
         const topUsers = await UserModel.find().sort({ algoPoints: -1 }).limit(20);
 

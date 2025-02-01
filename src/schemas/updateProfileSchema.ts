@@ -7,7 +7,7 @@ export const updateProfileSchema = z.object({
     }),
     userProfileImage: z.string().url({
         message: "Invalid image URL"
-    }),
+    }).or(z.literal("")).optional() ,
     username: z.string().min(1, "Username cannot be empty").max(50, "Username cannot be more than 50 characters"),
     clerkUserId: z.string(),
     socialLinks: z

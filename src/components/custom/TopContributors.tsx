@@ -39,7 +39,7 @@ const TopContributors = () => {
     }
 
     return (
-        <Card className="col-span-4 rounded-sm mx-4 sm:mx-auto mt-3 sm:mt-0 sm:max-w-md" id="leaderboard">
+        <Card className="rounded-sm mx-4 sm:mx-auto mt-3 sm:mt-0 sm:max-w-md h-fit" id="leaderboard">
             <CardContent className="p-3">
                 <div className="flex justify-center items-center gap-2 mb-6">
                     <h2 className="text-2xl font-bold">Top Contributors</h2>
@@ -67,6 +67,7 @@ const TopContributors = () => {
                         >
                             <div className="flex items-center gap-3">
                                 <span className="font-bold text-lg">{index + 1}</span>
+                                <img src={contributor.imageUrl} alt="User image" className="h-7 w-7 rounded-full"/>
                                 <Link href={`/user/${contributor.username}`} target="_blank" className="font-medium">{contributor.username}</Link>
                             </div>
                             <span className="font-semibold">{contributor.algopoints} AlgoPoints</span>
@@ -93,10 +94,10 @@ const TopContributors = () => {
                         <li>Comments on editorials: 3 points per upvote</li>
                         {/* <li>Helping others in discussions: 2 points per helpful comment</li> */}
                     </ul>
-                    <p className="mt-2">
+                    {/* <p className="mt-2">
                         * The leaderboard is updated in real-time as users earn points. Rankings are recalculated daily at midnight
                         UTC to ensure fair competition.
-                    </p>
+                    </p> */}
                 </div>
             </CardContent>
         </Card>

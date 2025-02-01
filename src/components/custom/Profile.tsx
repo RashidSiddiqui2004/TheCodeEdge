@@ -78,6 +78,7 @@ const Profile = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
+
         setFormData((prev) => ({ ...prev, [id]: value }));
         setErrors((prev) => ({ ...prev, [id]: "" }));
     };
@@ -95,8 +96,25 @@ const Profile = () => {
 
     const onSubmit = async () => {
         try {
+
             setIsSubmitting(true);
             setErrors({});
+
+
+            // check if username is unique 
+
+            const usernameUniqueResponse = await axios.get("/api/check-username-unique", {
+                params: { username: formData.username, clerkId: user?.id },
+            });
+
+
+            if (usernameUniqueResponse.data.success === false) {
+                toast({
+                    title: "Username already taken",
+                    variant: "destructive",
+                });
+                return;
+            }
 
             const validatedData = updateProfileSchema.parse({
                 ...formData,
@@ -111,6 +129,7 @@ const Profile = () => {
                     description: response.data.message,
                 });
             }
+
         } catch (error) {
             console.error("Error updating profile:", error);
 
@@ -193,7 +212,6 @@ const Profile = () => {
             fetchEditorials(user);
         }
     }, [user]);
-
 
     if (!user) {
         return (
