@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+ # TheCodeEdge
 
-## Getting Started
+**TheCodeEdge** is a platform built for competitive programmers to write, share, and explore contest editorials in a structured and community-driven way. It aims to centralize the editorial-writing process and promote knowledge sharing within the CP community.
 
-First, run the development server:
+> “Compete, solve, share – level up together.”
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Live Demo
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+🌐 [the-code-edge.vercel.app](https://the-code-edge.vercel.app)   
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🧩 Problem it Solves
 
-## Learn More
+- Editorials are often scattered across social media or blogs with inconsistent structure.
+- No centralized place exists where individuals can write and organize their contest solutions in an accessible way.
+- Hard for beginners to discover well-explained solutions for past contests.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎯 Key Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- 📝 **Write Editorials** – Choose a contest platform and contest, add problem-wise approaches, optional code, and notes.
+- 🧭 **Explore Editorials** – Browse latest/popular editorials with filters by platform, difficulty, and keywords.
+- 👤 **User Profiles** – Showcase your editorial contributions and earn **AlgoPoints** to unlock badges.
+- 📊 **Featured Editorial** – Based on popularity (likes/comments), highlighted on the landing page.
+- 💾 **Save as Draft** – Start writing and continue later.
+- 🔐 **Authentication & Dashboard** – Secure access with Clerk, your editorials in one dashboard.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🛠️ Tech Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Layer         | Technology                        |
+|--------------|------------------------------------|
+| **Frontend**  | Next.js 14 (App Router), TypeScript, Tailwind CSS |
+| **Backend**   | API routes, MongoDB with Mongoose |
+| **Auth**      | Clerk                              |
+| **Editor**    | Custom code editor integration     |
+| **Dev Tools** | GitHub, Postman, Vercel            |
+
+---
+
+## 🧱 MongoDB Schema Overview
+
+### `Editorial`
+```ts
+interface Editorial {
+  _id: ObjectId;
+  title: string;
+  author: ObjectId;
+  contestPlatform: string;
+  contestName: string;
+  languageUsed: string;
+  overallDifficulty: string;
+  problems: {
+    problemName: string;
+    approach: string;
+    code?: string;
+    problemUrl?: string;
+  }[];
+  likes: number;
+  comments: Comment[];
+  createdAt: Date;
+  updatedAt: Date;
+}
