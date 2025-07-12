@@ -21,12 +21,12 @@
 
 ## 🎯 Key Features
 
-- 📝 **Write Editorials** – Choose a contest platform and contest, add problem-wise approaches, optional code, and notes.
-- 🧭 **Explore Editorials** – Browse latest/popular editorials with filters by platform, difficulty, and keywords.
-- 👤 **User Profiles** – Showcase your editorial contributions and earn **AlgoPoints** to unlock badges.
-- 📊 **Featured Editorial** – Based on popularity (likes/comments), highlighted on the landing page.
-- 💾 **Save as Draft** – Start writing and continue later.
-- 🔐 **Authentication & Dashboard** – Secure access with Clerk, your editorials in one dashboard.
+- **Write Editorials** – Choose a contest platform and contest, add problem-wise approaches, optional code, and notes.
+- **Explore Editorials** – Browse latest/popular editorials with filters by platform, difficulty, and keywords.
+- **User Profiles** – Showcase your editorial contributions and earn **AlgoPoints** to unlock badges.
+- **Featured Editorial** – Based on popularity (likes/comments), highlighted on the landing page.
+- **Save as Draft** – Start writing and continue later.
+- **Authentication & Dashboard** – Secure access with Clerk, your editorials in one dashboard.
 
 ---
 
@@ -42,7 +42,7 @@
 
 ---
 
-## 🧱 MongoDB Schema Overview
+## MongoDB Schema Overview
 
 ### `Editorial`
 ```ts
